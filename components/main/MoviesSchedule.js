@@ -5,24 +5,44 @@ import {
   StyleSheet,
   Dimensions,
   Text,
-  FlatList
+  FlatList,
+  TouchableOpacity,
+  TouchableHighlight
 } from 'react-native';
+var arrDay = [];
+var corlorStyle;
 export default class MoviesSchedule extends Component<{}> {
   constructor(props) {
     super(props);
-    this.state = {
-      search: '',
-    };
-  }
+}
   render() {
-    return (
+          var d = new Date;
+          var first = d.getDate() - d.getDay();
+          for(let i = 0;i<7;i++){
+              let next = first  + i;
+              var nextday = (new Date(d.setDate(next))).toString();
+              let dayOfWeek = nextday.split (" ")[0];
+              let dateOfMonth = nextday.split (" ")[2]
+              let day_date  = { key : i, dayOfWeek : dayOfWeek, dateOfMonth : dateOfMonth};
+              arrDay[i] = day_date;
+            }
+            console.log("arrDay : " + arrDay);
+            for(let i = 0; i< arrDay.length ; i++){
+              if (arrDay[i].dateOfMonth == d.getDate()){
+               corlorStyle = (arrDay[i].dateOfMonth == d.getDate())?
+               styles.itemDateToday:styles.itemDate;
+             }
+            }
+      return (
       <View style = {styles.listDate}>
         <FlatList
-              data={[{key: 'SUN'}, {key: 'MON'}, {key: 'TUS'}, {key: 'WED'}, {key: 'THU'}, {key: 'FRI'}, {key: 'SAT'}]}
+              data={arrDay}
               renderItem={({item}) =>
                 <View style = {styles.itemDate}>
-                    <Text style = {{fontSize : 20, color : '#69657D'}}>30</Text>
-                    <Text style = {{fontSize : 10, color : '#69657D'}}>{item.key}</Text>
+                  <TouchableOpacity>
+                    <Text style = {{fontSize : 22, color : '#69657D'}}>{item.dateOfMonth}</Text>
+                    <Text style = {{fontSize : 12, color : '#69657D'}}>{item.dayOfWeek}</Text>
+                  </TouchableOpacity>
                 </View>
             }
               horizontal
@@ -34,14 +54,14 @@ export default class MoviesSchedule extends Component<{}> {
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   listDate : {
-    marginLeft : 10, marginRight : 10, marginTop : 10,
+    marginLeft : 10, marginRight : 10,
     height : height /12,
   },
   itemDate : {
     flex : 1, backgroundColor :'#1A1736',
     borderColor : 'white',
     borderWidth : 0.4,
-    width : height/12,
+    width : height/11,
     justifyContent : 'center', alignItems : 'center'
   },
 });
