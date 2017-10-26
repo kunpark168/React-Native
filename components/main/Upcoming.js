@@ -10,7 +10,7 @@ import {
   TouchableHighlight,
   Image
 } from 'react-native';
-export default class OnAirMovies extends Component<{}> {
+export default class Upcoming extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
@@ -27,10 +27,7 @@ export default class OnAirMovies extends Component<{}> {
                     data={this.state.arrMovies1}
                     renderItem={({item}) =>
                       <View style = {styles.onAirMovies}>
-                        <TouchableOpacity onPress = {() => {
-                               this.props.onPress ()
-                          }}
-                        >
+                        <TouchableOpacity>
                         <Image
                           style={{width: 120, height: 150}}
                           source={{uri: item.poster_thumb}}
@@ -45,9 +42,7 @@ export default class OnAirMovies extends Component<{}> {
                     data={this.state.arrMovies2}
                     renderItem={({item}) =>
                       <View style = {styles.onAirMovies}>
-                        <TouchableOpacity onPress = {() => {
-                               this.props.onPress ()
-                          }}>
+                        <TouchableOpacity>
                         <Image
                           style={{width: 120, height: 150}}
                           source={{uri: item.poster_thumb}}
@@ -62,9 +57,7 @@ export default class OnAirMovies extends Component<{}> {
                           data={this.state.arrMovies3}
                           renderItem={({item}) =>
                             <View style = {styles.onAirMovies}>
-                              <TouchableOpacity onPress = {() => {
-                                     this.props.onPress ()
-                                }}>
+                              <TouchableOpacity>
                               <Image
                                 style={{width: 120, height: 150}}
                                 source={{uri: item.poster_thumb}}
@@ -84,7 +77,7 @@ export default class OnAirMovies extends Component<{}> {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({"param": {"url": "/film/list?status=2", "keyCache": "showing-film"}, "method": "GET"})
+      body: JSON.stringify({"param": {"url": "/film/list?status=1", "keyCache": "main-films-coming"}, "method": "GET"})
     })
     .then((response)=>response.json())
     .then((responseJson)=>{
@@ -94,12 +87,12 @@ export default class OnAirMovies extends Component<{}> {
        let arrMoviesFlag3 = [];
       for (let i = 0; i< arrFlag.length ; i++){
         let ob = {key : i, poster_thumb : arrFlag[i].poster_thumb, film_id : arrFlag[i].film_id};
-          if (i<5){
+          if (i<14){
             arrMoviesFlag1 [i] = ob;
-          }else if (i>4 && i< 10){
-              arrMoviesFlag2 [i-5] = ob;
-          }else if (i>9){
-              arrMoviesFlag3 [i-10] = ob;
+          }else if (i>13 && i< 28){
+              arrMoviesFlag2 [i-14] = ob;
+          }else if (i>27){
+              arrMoviesFlag3 [i-28] = ob;
           }
     }
       this.setState({

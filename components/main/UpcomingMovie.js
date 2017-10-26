@@ -8,33 +8,34 @@ import {
   FlatList,
   TouchableOpacity,
   TouchableHighlight,
-  Image
+  Image,
+  ListView
 } from 'react-native';
-export default class UpcomingMovies extends Component<{}> {
+export default class UpcomingMovie extends Component<{}> {
   constructor(props) {
     super(props);
+    const ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
     this.state = {
-      arrMovies : []
+      dataSource : ds.cloneWithRows(['row 1', 'row 2']),
     };
   }
   render() {
       return (
       <View style = {styles.containerOnAirMovies}>
-        <FlatList
-              data={this.state.arrMovies}
-              renderItem={({item}) =>
-                <View style = {styles.onAirMovies}>
-                  <TouchableOpacity>
-                  <Image
-                    style={{width: 200, height: 100}}
-                    source={{uri: item.poster_landscape}}
-                  />
-                  </TouchableOpacity>
-                </View>
+          <ListView
+            horizontal
+            dataSource={this.state.dataSource}
+            renderRow={(rowData) =>
+              <View style = {styles.onAirMovies}>
+                <TouchableOpacity>
+                <Image
+                  style={{width: 220, height: 150}}
+                  source={{uri: rowData.poster_landscape}}
+                />
+                </TouchableOpacity>
+              </View>
             }
-            horizontal = {false}
-            numColumns = {2}
-              />
+          />
       </View>
       );
   }
@@ -49,17 +50,19 @@ export default class UpcomingMovies extends Component<{}> {
     })
     .then((response)=>response.json())
     .then((responseJson)=>{
-      console.log("ArrBannerSwiper : " + responseJson);
-      let arrFlag = responseJson.result;
-      let arrMoviesFlag = [];
-      for (let i = 0; i< arrFlag.length ; i++){
-        let ob = {key : i, poster_landscape : arrFlag[i].poster_landscape};
-        arrMoviesFlag [i] = ob;
+      let ds = new ListView.DataSource({rowHasChanged: (r1,r2)=>r1 !== r2});
+      let arrFlag = responseJson.result ;
+      let arrFlagMovies = [];
+      for (let i = 0; i< arrFlag.length; i++){
+        let ob = {film_id : arrFlag[i].film_id, poster_landscape : arrFlag[i].poster_landscape};
+        arrFlagMovies [i] = ob;
       }
-      console.log();
+      console.log(arrFlagMovies);
       this.setState({
-        arrMovies : arrMoviesFlag,
+        isLoading: false,
+        dataSource: ds.cloneWithRows(arrFlagMovies),
       },function(){
+        //do something with new state
       });
     })
     .catch((error)=>{
@@ -71,7 +74,7 @@ const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   containerOnAirMovies : {
     marginLeft : 10,
-    height : 500, justifyContent : 'space-between'
+    justifyContent : 'space-between'
   },
   onAirMovies : {
     flex : 1,

@@ -26,7 +26,6 @@ export default class MoviesSchedule extends Component<{}> {
               let day_date  = { key : i, dayOfWeek : dayOfWeek, dateOfMonth : dateOfMonth};
               arrDay[i] = day_date;
             }
-            console.log("arrDay : " + arrDay);
             for(let i = 0; i< arrDay.length ; i++){
               if (arrDay[i].dateOfMonth == d.getDate()){
                corlorStyle = (arrDay[i].dateOfMonth == d.getDate())?

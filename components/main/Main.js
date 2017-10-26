@@ -4,7 +4,8 @@ import MoviesSwiper from "./MoviesSwiper";
 import SearchBox from "./SearchBox";
 import MoviesSchedule from "./MoviesSchedule";
 import OnAirMovies from "./OnAirMovies";
-import UpcomingMovies from "./UpcomingMovies";
+import UpcomingMovie from "./UpcomingMovie";
+import Upcoming from "./Upcoming";
 import MovieTheater from "./MovieTheater";
 import MovieDetail from "../movieDetail/MovieDetail"
 import {
@@ -14,7 +15,8 @@ import {
  StatusBar,
  Image,
  Text,
- ScrollView
+ ScrollView,
+ AppRegistry
 } from 'react-native';
 import {
  StackNavigator,
@@ -29,6 +31,10 @@ class HomeScreen extends Component{
      this.state = {
       dataSwiper : [],
     };
+  }
+  moveToMovieDetailActivity (){
+    console.log("Movie Detail");
+    this.props.navigation.navigate('Home');
   }
   render() {
     if (this.state.dataSwiper.length > 0){
@@ -69,7 +75,7 @@ class HomeScreen extends Component{
                 </View>
 
           </View>
-          <OnAirMovies />
+          <OnAirMovies onPress = {this.moveToMovieDetailActivity} />
           <View style = {styles.containerCalendar}>
                 <Image
                    style = {{flex : 1, marginLeft : 5}}
@@ -81,7 +87,7 @@ class HomeScreen extends Component{
                 </View>
 
           </View>
-          <UpcomingMovies />
+          <OnAirMovies />
           <View style = {styles.containerCalendar}>
                 <Image
                    style = {{flex : 1, marginLeft : 5}}
@@ -92,11 +98,11 @@ class HomeScreen extends Component{
                   <Text style = {styles.textCalendar}>Movie Theaters</Text>
                 </View>
 
-          </View>
-          <MovieTheater />
+         </View>
+         <MovieTheater />
       </ScrollView>
   );
-  }
+}
   componentDidMount(){
     return fetch('http://www.123phim.vn/apitomapp',{
       method: 'POST',
@@ -108,8 +114,7 @@ class HomeScreen extends Component{
     })
     .then((response)=>response.json())
     .then((responseJson)=>{
-      console.log("ArrBannerSwiper : " + responseJson);
-      this.setState({
+       this.setState({
         dataSwiper : responseJson.result,
       },function(){
       });
@@ -124,8 +129,9 @@ export default class Main extends Component<{}> {
     return <MainNavigator />;
   }
 }
-const MainNavigator = StackNavigator({
+export const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
+  Detail : { screen: MovieDetail }
 });
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
@@ -140,3 +146,4 @@ const styles = StyleSheet.create({
       color : 'white', fontStyle : 'italic'
     }
 });
+AppRegistry.registerComponent('eTicket', () => MainNavigator);

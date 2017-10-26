@@ -14,26 +14,26 @@ export default class MovieTheater extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      arrTheater : []
+      arrMovies : []
     };
   }
   render() {
       return (
       <View style = {styles.containerOnAirMovies}>
         <FlatList
-              data={this.state.arrTheater}
+              data={this.state.arrMovies}
               renderItem={({item}) =>
                 <View style = {styles.onAirMovies}>
                   <TouchableOpacity>
                   <Image
-                    style={{width: 50, height: 50, borderRadius: 50}}
+                    style={{width: 60, height: 60, borderRadius : 50, borderWidth : 1, borderColor : 'white'}}
                     source={{uri: item.cinema_logo}}
                   />
                   </TouchableOpacity>
                 </View>
             }
             horizontal = {false}
-            numColumns = {5}
+            numColumns = {4}
               />
       </View>
       );
@@ -49,15 +49,28 @@ export default class MovieTheater extends Component<{}> {
     })
     .then((response)=>response.json())
     .then((responseJson)=>{
-      console.log(responseJson);
       let arrFlag = responseJson.result;
-      let arrTheaterFlag = [];
+      let arrMoviesFlag = [];
       for (let i = 0; i< arrFlag.length ; i++){
-        let ob = {key : i, cinema_logo : arrFlag[i].cinema_logo};
-        arrTheaterFlag [i] = ob;
+        var ob = { key : arrFlag[i].p_cinema_id, cinema_logo : arrFlag[i].cinema_logo };
+        if (arrMoviesFlag.length == 0){
+          arrMoviesFlag [i] = ob;
+        }else {
+            let flag = true;
+            for (let j = 0; j < arrMoviesFlag.length; j++){
+               if (arrFlag[i].p_cinema_id == arrMoviesFlag[j].key){
+                  flag = false;
+                }
+              }
+            if (flag == true){
+             let index = arrMoviesFlag.length;
+             arrMoviesFlag[index] = ob;
+            }
+        }
+
       }
       this.setState({
-        arrTheater : arrTheaterFlag,
+        arrMovies : arrMoviesFlag,
       },function(){
       });
     })
@@ -70,10 +83,10 @@ const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   containerOnAirMovies : {
     marginLeft : 10,
-    height : 500, justifyContent : 'space-between'
+    justifyContent : 'space-between'
   },
   onAirMovies : {
     flex : 1,
-    justifyContent : 'space-between', marginBottom : 15, marginRight : 10, borderWidth : 0.8, borderColor : 'white'
+    justifyContent : 'space-between', marginBottom : 15, marginRight : 10,
   }
 });
