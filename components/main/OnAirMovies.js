@@ -10,6 +10,9 @@ import {
   TouchableHighlight,
   Image
 } from 'react-native';
+import {
+ StackNavigator,
+} from 'react-navigation';
 export default class OnAirMovies extends Component<{}> {
   constructor(props) {
     super(props);
@@ -28,7 +31,7 @@ export default class OnAirMovies extends Component<{}> {
                     renderItem={({item}) =>
                       <View style = {styles.onAirMovies}>
                         <TouchableOpacity onPress = {() => {
-                               this.props.onPress ()
+                               this.props.onPress (item.film_id)
                           }}
                         >
                         <Image
@@ -46,7 +49,7 @@ export default class OnAirMovies extends Component<{}> {
                     renderItem={({item}) =>
                       <View style = {styles.onAirMovies}>
                         <TouchableOpacity onPress = {() => {
-                               this.props.onPress ()
+                               this.props.onPress (item.film_id)
                           }}>
                         <Image
                           style={{width: 120, height: 150}}
@@ -63,7 +66,7 @@ export default class OnAirMovies extends Component<{}> {
                           renderItem={({item}) =>
                             <View style = {styles.onAirMovies}>
                               <TouchableOpacity onPress = {() => {
-                                     this.props.onPress ()
+                                     this.props.onPress (item.film_id)
                                 }}>
                               <Image
                                 style={{width: 120, height: 150}}

@@ -29,18 +29,21 @@ class HomeScreen extends Component{
   constructor(props) {
     super(props);
      this.state = {
-      dataSwiper : [],
+      dataSwiper : [{banner_url : "https://s3img.vcdn.vn/123phim/2017/10/thor-15090658004895.jpg"},
+                    {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/trong-tung-nhip-tho-15090705538653.jpg"},
+                    {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/little-pony-15090706337422.jpg"},
+                    {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/blade-runner-15090790192049.jpg"}],
     };
-  }
-  moveToMovieDetailActivity (){
-    console.log("Movie Detail");
-    this.props.navigation.navigate('Home');
-  }
+}
   render() {
     if (this.state.dataSwiper.length > 0){
-      for (let i =0; i< 5; i++){
-        urlPoster[i] = this.state.dataSwiper[i].banner_url;
+      for (let i =0; i< this.state.dataSwiper.length; i++){
+        if (this.state.dataSwiper[i].banner_url != null){
+          let ob = {banner_url : this.state.dataSwiper[i].banner_url}
+          urlPoster[i] = this.state.dataSwiper[i].banner_url;
+        }
       }
+      console.log(this.state.dataSwiper);
    }
     return (
       <ScrollView style = {styles.container}>
@@ -48,10 +51,10 @@ class HomeScreen extends Component{
                  backgroundColor="#231F41"
                  barStyle="light-content"/>
            <SearchBox />
-           <MoviesSwiper linkPoster1 = {urlPoster[0]}
-                         linkPoster2 = {urlPoster[1]}
-                         linkPoster3 = {urlPoster[2]}
-                         linkPoster4 = {urlPoster[3]} />
+           <MoviesSwiper linkPoster1 = {this.state.dataSwiper[0].banner_url}
+                         linkPoster2 = {this.state.dataSwiper[1].banner_url}
+                         linkPoster3 = {this.state.dataSwiper[2].banner_url}
+                         linkPoster4 = {this.state.dataSwiper[3].banner_url} />
             <View style = {styles.containerCalendar}>
                   <Image
                      style = {{flex : 1, marginLeft : 5}}
@@ -75,7 +78,10 @@ class HomeScreen extends Component{
                 </View>
 
           </View>
-          <OnAirMovies onPress = {this.moveToMovieDetailActivity} />
+          <OnAirMovies onPress = {(id_film)=> {
+            this.props.navigation.navigate('Detail', {fiml_id : id_film});
+            console.log("id_film", id_film);
+          } }/>
           <View style = {styles.containerCalendar}>
                 <Image
                    style = {{flex : 1, marginLeft : 5}}
@@ -124,12 +130,7 @@ class HomeScreen extends Component{
     });
   }
 }
-export default class Main extends Component<{}> {
-  render() {
-    return <MainNavigator />;
-  }
-}
-export const MainNavigator = StackNavigator({
+const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
   Detail : { screen: MovieDetail }
 });
@@ -146,4 +147,4 @@ const styles = StyleSheet.create({
       color : 'white', fontStyle : 'italic'
     }
 });
-AppRegistry.registerComponent('eTicket', () => MainNavigator);
+export default MainNavigator;
