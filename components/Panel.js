@@ -100,7 +100,9 @@ const styles= StyleSheet.create({
     height:25
   },
   body:{
-    padding:10
+    padding:10,
+    paddingBottom:0,
+    backgroundColor:'black'
   }
 });
 export default Panel;

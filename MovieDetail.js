@@ -10,18 +10,25 @@ import {
   TouchableOpacity,
   Picker,
   ActivityIndicator,
-  FlatList
+  FlatList,
+  TouchableWithoutFeedback
 } from 'react-native';
 
-export default class App extends Component<{}> {
+export default class MovieDetail extends Component<{}> {
   constructor(props){
     super(props);
     this.state={
       isLoading:true,
-      isLoading2:true
+      isLoading2:true,
+      id:0,
+      cineId:0,
+      day: new Date().getDate(),
+      textColored: false
     }
     this.getDateOfWeek = this.getDateOfWeek.bind(this);
-    this.getListCinemas = this.getListCinemas.bind(this);
+    this.colorText = this.colorText.bind(this);
+    this.resetText = this.resetText.bind(this);
+    this.onChangeDate = this.onChangeDate.bind(this);
   }
   componentDidMount(){
       fetch('http://www.123phim.vn/apitomapp',{
@@ -65,6 +72,25 @@ export default class App extends Component<{}> {
       .catch((error)=>{
         console.error(error);
       });
+
+      fetch('http://www.123phim.vn/apitomapp',{
+        method:'POST',
+        headers:{
+          'Accept':'application/json',
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({"param": {"url": "/cinema/list?location_id=1", "keyCache": "main-cinemas1"}, "method": "GET"})
+      })
+      .then((response)=>response.json())
+      .then((responseJson)=>{
+        this.setState({
+          isLoading3: false,
+          returnData3: responseJson.result,
+        });
+      })
+      .catch((error)=>{
+        console.error(error);
+      })
   }
 
   getDateOfWeek(){
@@ -93,19 +119,81 @@ export default class App extends Component<{}> {
     return weekDates;
   }
 
-  getListCinemas(id){
+  getListSessions(id, idCine, day){
     var data = this.state.returnData2;
     var list = [];
-    for(let i = 0; i< data.length;i++){
-      if(id == data[i].p_cinema_id){
-        let tmp = data[i].cinema_name;
+    for(let i = 0; i<data.length;i++){
+      if(id == data[i].p_cinema_id
+        && Number(data[i].session_time.slice(8,10)) == day && idCine == data[i].cinema_id){
+        let time = this.getTime(data[i].session_time);
+        let tmp = time +"~"+this.calculateEndTime(time, Number(data[i].film_duration));
         list.push(tmp);
       }
     }
     return list;
   }
+  getMainCinemas(){
+    var data = this.state.returnData3;
+    var list = [];
+    for(let i = 0; i< data.length;i++){
+      if(!list.includes(data[i].p_cinema_name +"/"+ data[i].p_cinema_id))
+      {
+        list.push(data[i].p_cinema_name +"/"+ data[i].p_cinema_id);
+      }
+    }
+    return list;
+  }
+  getListCinemas(id, day){
+    var data = this.state.returnData2;
+    var list = [];
+    for(let i = 0; i<data.length;i++){
+      if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day && !list.includes(data[i].cinema_name+"/"+data[i].cinema_id)){
+        let tmp = data[i].cinema_name+"/"+ data[i].cinema_id;
+        list.push(tmp);
+      }
+    }
+    return list;
+  }
+  getTime(time){
+    let tmp = time.slice(11,16);
+    return tmp;
+  }
+  calculateEndTime(time, duration){
+    let hours = Math.floor(duration / 60);
+    let mins = duration - hours * 60;
+    let timeHours = Number(time.substr(0,2));
+    let timeMins = Number(time.substr(4));
+    let resultH = hours+timeHours;
+    let resultM = mins + timeMins;
+    return resultH +":"+resultM;
+  }
+  onChangeDate=(day)=>{
+    this.setState({
+      day: day
+    });
+    console.log(this.state.day);
+  }
+  onChangeCinema(id, cineId){
+    this.setState({
+      id: id,
+      cineId: cineId
+    })
+  }
+  textColored(){
+    if(this.state.textColored) {
+      return styles.dateTextPressed;
+    } else {
+      return styles.dateText;
+    }
+  }
+  colorText(){
+    this.setState({textColored:true});
+  }
+  resetText(){
+    this.setState({textColored:false});
+  }
   render() {
-    if(this.state.isLoading || this.state.isLoading2){
+    if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
       return(
         <View style={{flex:1, paddingTop: 20}}>
           <ActivityIndicator/>
@@ -154,57 +242,37 @@ export default class App extends Component<{}> {
           </FlatList>
         </ScrollView>
 
-        <View style = {styles.horizontalView}>
-          <Picker style = {styles.theatrePicker}
-            >
-            <Picker.Item label = 'Lotte Cinema' />
-            <Picker.Item label = 'Galaxy Cinema' />
-            <Picker.Item label = 'BHD Star Cineplex' />
-          </Picker>
-
-          <Picker style = {styles.theatrePicker}>
-            <Picker.Item label = 'CNS - Quốc Thanh' />
-            <Picker.Item label = 'Lotte - Cộng Hòa' />
-            <Picker.Item label = 'GLX - Quang Trung' />
-          </Picker>
-        </View>
-
         <ScrollView horizontal={true}>
           <FlatList horizontal={true}
             data={this.getDateOfWeek()}
             renderItem={({item})=>
-              <View style = {styles.dateView}>
-                <Text style = {styles.mediumText}>{item.key}</Text>
-                <Text style = {styles.dateText}>{item.day}</Text>
-              </View>}></FlatList>
+                <View style = {styles.dateView}>
+                  <Text style = {styles.mediumText}>{item.key}</Text>
+                  <TouchableOpacity style={styles.dateView}
+                    onPress={()=>this.onChangeDate(item.day)}>
+                  <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
+                </View>
+              }></FlatList>
         </ScrollView>
 
         <ScrollView>
-          <Panel title="CineStar" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>{this.getListCinemas(16)}</Text>
-
-          </Panel>
-          <Panel title="Lotte Cinema" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="BHD Star Cineplex" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="Galaxy Cinema" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="Dong Da Cinema" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="Mega GS" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="CGV" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
-          <Panel title="Cụm rạp khác" style = {styles.mediumText}>
-            <Text style = {styles.smallText}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</Text>
-          </Panel>
+          {this.getMainCinemas().map((result, key)=>{
+            return(
+              <Panel title={result.slice(0,result.indexOf('/'))}>
+                {this.getListCinemas(result.slice(result.indexOf('/')+1),this.state.day).map((prop, key)=>{
+                  return(
+                    <View style={styles.sessionView}>
+                      <Text style={styles.mediumText}>{prop.slice(0,prop.indexOf('/'))}</Text>
+                      <FlatList style={marginTop= -50}
+                        data={this.getListSessions(result.slice(result.indexOf('/')+1),prop.slice(prop.indexOf('/')+1),this.state.day)}
+                        renderItem={({item})=>
+                        <View>
+                          <Text style = {styles.mediumText}>{item}</Text>
+                        </View>}></FlatList>
+                    </View>
+                  );})}
+              </Panel>
+            );})}
           <View style={{padding:10}}></View>
         </ScrollView>
       </ScrollView>
@@ -216,7 +284,6 @@ export default class App extends Component<{}> {
 const styles = StyleSheet.create({
 
   container: {
-    flex: 1,
     padding: 18,
     backgroundColor: 'darkblue'
   },
@@ -249,7 +316,6 @@ const styles = StyleSheet.create({
   },
 
   mediumText: {
-    flex: 1,
     fontSize: 16,
     color: 'lime',
     marginBottom: 3,
@@ -324,6 +390,18 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 10
+  },
+  dateTextPressed:{
+    flex: 1,
+    color: 'red',
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginLeft: 10
+  },
+  sessionView:{
+    marginBottom:10,
+    borderColor: '#c9c9c9',
+    borderBottomWidth: 0.5
   },
 
   theatreView: {
