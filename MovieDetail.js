@@ -11,7 +11,7 @@ import {
   Picker,
   ActivityIndicator,
   FlatList,
-  TouchableWithoutFeedback
+  Animated
 } from 'react-native';
 
 export default class MovieDetail extends Component<{}> {
@@ -23,11 +23,9 @@ export default class MovieDetail extends Component<{}> {
       id:0,
       cineId:0,
       day: new Date().getDate(),
-      textColored: false
+      reload: false
     }
     this.getDateOfWeek = this.getDateOfWeek.bind(this);
-    this.colorText = this.colorText.bind(this);
-    this.resetText = this.resetText.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
   }
   componentDidMount(){
@@ -63,7 +61,6 @@ export default class MovieDetail extends Component<{}> {
       })
       .then((response)=>response.json())
       .then((responseJson)=>{
-        console.log(responseJson);
         this.setState({
           isLoading2: false,
           returnData2: responseJson.result,
@@ -134,24 +131,27 @@ export default class MovieDetail extends Component<{}> {
   }
   getMainCinemas(){
     var data = this.state.returnData3;
-    var list = [];
+    var list = [], nameList = [];
     for(let i = 0; i< data.length;i++){
-      if(!list.includes(data[i].p_cinema_name +"/"+ data[i].p_cinema_id))
+      if(!nameList.includes(data[i].p_cinema_name))
       {
-        list.push(data[i].p_cinema_name +"/"+ data[i].p_cinema_id);
+        list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo});
+        nameList.push(data[i].p_cinema_name);
       }
     }
     return list;
   }
   getListCinemas(id, day){
     var data = this.state.returnData2;
-    var list = [];
+    var list = [], nameList=[];
     for(let i = 0; i<data.length;i++){
-      if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day && !list.includes(data[i].cinema_name+"/"+data[i].cinema_id)){
-        let tmp = data[i].cinema_name+"/"+ data[i].cinema_id;
-        list.push(tmp);
+      if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day && !nameList.includes(data[i].cinema_name)){
+        list.push({name: data[i].cinema_name, id: data[i].cinema_id});
+        nameList.push(data[i].cinema_name);
       }
     }
+    if(list.length == 0)
+      list.push({name: 'Không có suất chiếu', id: ''});
     return list;
   }
   getTime(time){
@@ -169,28 +169,15 @@ export default class MovieDetail extends Component<{}> {
   }
   onChangeDate=(day)=>{
     this.setState({
-      day: day
+      day: day,
+      reload: true
     });
-    console.log(this.state.day);
   }
   onChangeCinema(id, cineId){
     this.setState({
       id: id,
       cineId: cineId
     })
-  }
-  textColored(){
-    if(this.state.textColored) {
-      return styles.dateTextPressed;
-    } else {
-      return styles.dateText;
-    }
-  }
-  colorText(){
-    this.setState({textColored:true});
-  }
-  resetText(){
-    this.setState({textColored:false});
   }
   render() {
     if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
@@ -230,7 +217,7 @@ export default class MovieDetail extends Component<{}> {
 
         <Text style = {styles.infoText}>{this.state.returnData.film_description_mobile}</Text>
 
-        <ScrollView horizontal={true} showsVerticalScrollIndicator={false}>
+        <ScrollView horizontal={true} showsVerticalScrollIndicator={false} style={styles.seperatedView}>
           <FlatList horizontal={true}
             data={this.state.returnData.list_actor}
             renderItem={({item})=>
@@ -238,11 +225,12 @@ export default class MovieDetail extends Component<{}> {
               <Image style={styles.actorIcon}
                 source={{uri: item.avatar}}></Image>
                 <Text style={styles.smallText}>{item.artist_name}</Text>
-            </View>}>
+            </View>}
+            keyExtractor={(item, index) => index}>
           </FlatList>
         </ScrollView>
 
-        <ScrollView horizontal={true}>
+        <ScrollView horizontal={true} style={styles.seperatedView}>
           <FlatList horizontal={true}
             data={this.getDateOfWeek()}
             renderItem={({item})=>
@@ -252,23 +240,26 @@ export default class MovieDetail extends Component<{}> {
                     onPress={()=>this.onChangeDate(item.day)}>
                   <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
                 </View>
-              }></FlatList>
+              }
+              keyExtractor={(item, index) => index}></FlatList>
         </ScrollView>
 
         <ScrollView>
+          <View style={paddingTop=5}></View>
           {this.getMainCinemas().map((result, key)=>{
             return(
-              <Panel title={result.slice(0,result.indexOf('/'))}>
-                {this.getListCinemas(result.slice(result.indexOf('/')+1),this.state.day).map((prop, key)=>{
+              <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}>
+                {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
                   return(
-                    <View style={styles.sessionView}>
-                      <Text style={styles.mediumText}>{prop.slice(0,prop.indexOf('/'))}</Text>
-                      <FlatList style={marginTop= -50}
-                        data={this.getListSessions(result.slice(result.indexOf('/')+1),prop.slice(prop.indexOf('/')+1),this.state.day)}
+                    <View style={styles.sessionView} key={prop.id}>
+                      <Text style={styles.mediumText}>{prop.name}</Text>
+                      <FlatList
+                        data={this.getListSessions(result.id,prop.id,this.state.day)}
                         renderItem={({item})=>
                         <View>
                           <Text style = {styles.mediumText}>{item}</Text>
-                        </View>}></FlatList>
+                        </View>}
+                        keyExtractor={(item, index) => index}></FlatList>
                     </View>
                   );})}
               </Panel>
@@ -285,7 +276,7 @@ const styles = StyleSheet.create({
 
   container: {
     padding: 18,
-    backgroundColor: 'darkblue'
+    backgroundColor: '#221e40'
   },
 
   horizontalView: {
@@ -310,21 +301,21 @@ const styles = StyleSheet.create({
   largeText: {
     flex: 1,
     fontSize: 20,
-    color: 'red',
     fontWeight: 'bold',
-    marginLeft: 10
+    marginLeft: 10,
+    color:'white'
   },
 
   mediumText: {
     fontSize: 16,
-    color: 'lime',
+    color: 'white',
     marginBottom: 3,
     marginLeft: 10
   },
 
   smallText: {
     fontSize: 13,
-    color: 'lime'
+    color: 'white'
   },
 
   clockIcon: {
@@ -333,7 +324,7 @@ const styles = StyleSheet.create({
   },
 
   trailerButton: {
-    backgroundColor: 'yellow',
+    backgroundColor: '#f26697',
     width: 80,
     height: 35,
     paddingTop: 15,
@@ -367,6 +358,13 @@ const styles = StyleSheet.create({
     marginRight: 17
   },
 
+  seperatedView:{
+    paddingBottom:10,
+    borderColor: '#5a5960',
+    borderBottomWidth: 0.5,
+    marginBottom:10
+  },
+
   actorIcon: {
     width:50,
     height:50,
@@ -374,12 +372,6 @@ const styles = StyleSheet.create({
     borderRadius: 100
   },
 
-  theatrePicker: {
-    color: 'red',
-    width: 150,
-    marginTop: 20,
-    marginRight: 20
-  },
   dateView: {
     alignItems: 'center',
     width:80
@@ -400,30 +392,7 @@ const styles = StyleSheet.create({
   },
   sessionView:{
     marginBottom:10,
-    borderColor: '#c9c9c9',
+    borderColor: '#5a5960',
     borderBottomWidth: 0.5
-  },
-
-  theatreView: {
-    marginTop: 20,
-    marginBottom: 20
-  },
-
-  theatreName: {
-    color: 'fuchsia',
-    fontSize: 16,
-    fontWeight: 'bold'
-  },
-
-  theatrePrice: {
-    color: 'red',
-    backgroundColor: 'lime',
-    fontWeight: 'bold',
-    width: 70,
-    paddingTop: 3,
-    paddingBottom: 3,
-    paddingLeft: 22,
-    marginLeft: 50,
-    borderRadius: 50
   }
 });

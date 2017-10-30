@@ -12,8 +12,22 @@ class Panel extends Component{
     }
     this.state={
       title: props.title,
+      icon: props.icon,
       isExpanded: true,
-      animation: new Animated.Value()
+      animation: new Animated.Value(),
+      reload: false
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.reload !== this.state.reload) {
+      this.setState({ reload: nextProps.reload });
+    }
+    if(this.state.reload && !this.state.isExpanded){
+      this.toggle();
+      this.setState({
+        reload: false
+      });
+      console.log('inside');
     }
   }
   toggle(){
@@ -22,7 +36,6 @@ class Panel extends Component{
     this.setState({
       isExpanded: !this.state.isExpanded
     });
-
     this.state.animation.setValue(initialValue);
     Animated.spring(
       this.state.animation,
@@ -48,14 +61,16 @@ class Panel extends Component{
     if(this.state.isExpanded){
       icon = this.icons['right'];
     }
-
     return(
       <Animated.View
         style={[styles.container,{height: this.state.animation}]}>
         <View style={styles.container}>
           <TouchableOpacity
             onPress={this.toggle.bind(this)}>
-            <View style={styles.titleContainer} onLayout={this._setMinHeight.bind(this)}>
+            <View style={styles.titleContainer} onLayout={this._setMinHeight.bind(this)} horizontal={true}>
+              <Image
+                style={styles.iconImage}
+                source= {{uri: this.state.icon}}></Image>
               <Text style={styles.title}>{this.state.title}</Text>
               <TouchableOpacity
                 style={styles.button}
@@ -71,7 +86,6 @@ class Panel extends Component{
             {this.props.children}
           </View>
         </View>
-
       </Animated.View>
     )
   }
@@ -79,30 +93,39 @@ class Panel extends Component{
 
 const styles= StyleSheet.create({
   container:{
-    backgroundColor:'darkblue',
+    backgroundColor:'#221e40',
     overflow:'hidden',
     marginBottom:20
   },
   titleContainer:{
-    flexDirection:'row'
+    flexDirection:'row',
+    paddingBottom:20,
+    borderColor: '#5a5960',
+    borderBottomWidth: 0.5,
   },
 
   title:{
     flex : 1,
-    padding: 10,
-    color: '#fff',
-    fontWeight:'bold'
+    paddingLeft:10,
+    paddingRight:10,
+    paddingTop: 5,
+    color: 'white'
   },
 
-  button:{},
+  button:{
+
+  },
   buttonImage:{
     width: 30,
     height:25
   },
+  iconImage:{
+    width: 30,
+    height: 30
+  },
   body:{
     padding:10,
-    paddingBottom:0,
-    backgroundColor:'black'
+    paddingBottom:0
   }
 });
 export default Panel;
