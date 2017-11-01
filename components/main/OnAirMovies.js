@@ -35,7 +35,7 @@ export default class OnAirMovies extends Component<{}> {
                           }}
                         >
                         <Image
-                          style={{width: 120, height: 150}}
+                          style={{width: 105, height: 150}}
                           source={{uri: item.poster_thumb}}
                         />
                         </TouchableOpacity>
@@ -52,7 +52,7 @@ export default class OnAirMovies extends Component<{}> {
                                this.props.onPress (item.film_id)
                           }}>
                         <Image
-                          style={{width: 120, height: 150}}
+                          style={{width: 105, height: 150}}
                           source={{uri: item.poster_thumb}}
                         />
                         </TouchableOpacity>
@@ -69,7 +69,7 @@ export default class OnAirMovies extends Component<{}> {
                                      this.props.onPress (item.film_id)
                                 }}>
                               <Image
-                                style={{width: 120, height: 150}}
+                                style={{width: 105, height: 150}}
                                 source={{uri: item.poster_thumb}}
                               />
                               </TouchableOpacity>
@@ -101,7 +101,7 @@ export default class OnAirMovies extends Component<{}> {
             arrMoviesFlag1 [i] = ob;
           }else if (i>4 && i< 10){
               arrMoviesFlag2 [i-5] = ob;
-          }else if (i>9){
+          }else if (i>9 && i < 15){
               arrMoviesFlag3 [i-10] = ob;
           }
     }
@@ -121,7 +121,7 @@ const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   containerOnAirMovies : {
     marginLeft : 10,
-    height : 500, justifyContent : 'space-between'
+    justifyContent : 'space-between'
   },
   onAirMovies : {
     flex : 1,

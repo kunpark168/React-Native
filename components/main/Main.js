@@ -16,7 +16,7 @@ import {
  Image,
  Text,
  ScrollView,
- AppRegistry
+ TouchableOpacity
 } from 'react-native';
 import {
  StackNavigator,
@@ -36,16 +36,7 @@ class HomeScreen extends Component{
     };
 }
   render() {
-    if (this.state.dataSwiper.length > 0){
-      for (let i =0; i< this.state.dataSwiper.length; i++){
-        if (this.state.dataSwiper[i].banner_url != null){
-          let ob = {banner_url : this.state.dataSwiper[i].banner_url}
-          urlPoster[i] = this.state.dataSwiper[i].banner_url;
-        }
-      }
-      console.log(this.state.dataSwiper);
-   }
-    return (
+   return (
       <ScrollView style = {styles.container}>
            <StatusBar
                  backgroundColor="#231F41"
@@ -57,9 +48,9 @@ class HomeScreen extends Component{
                          linkPoster4 = {this.state.dataSwiper[3].banner_url} />
             <View style = {styles.containerCalendar}>
                   <Image
-                     style = {{flex : 1, marginLeft : 5}}
+                     style = {{flex : 1, marginLeft : 5, marginTop : 6}}
                      resizeMode = {'center'}
-                     source = {require('../../img/imgCalendar2.png')}
+                     source = {require('../../img/imgCalendar.png')}
                   />
                   <View style = {{flex : 9, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
                     <Text style = {styles.textCalendar}>Movies Schedule</Text>
@@ -69,14 +60,18 @@ class HomeScreen extends Component{
           <MoviesSchedule />
           <View style = {styles.containerCalendar}>
                 <Image
-                   style = {{flex : 1, marginLeft : 5}}
+                   style = {{flex : 1, marginLeft : 9, marginTop : 6}}
                    resizeMode = {'center'}
-                   source = {require('../../img/imgCalendar2.png')}
+                   source = {require('../../img/imgCalendar.png')}
                 />
-                <View style = {{flex : 9, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
+                <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
                   <Text style = {styles.textCalendar}>On Air Movies</Text>
                 </View>
-
+                <View style = {{flex : 5, justifyContent : 'center', marginRight : 10, marginTop : 8, alignItems : 'flex-end'}}>
+                  <TouchableOpacity>
+                    <Text style = {[styles.textCalendar, {color : 'red', fontStyle : 'italic'}]}>More movies</Text>
+                  </TouchableOpacity >
+                </View>
           </View>
           <OnAirMovies onPress = {(id_film)=> {
             this.props.navigation.navigate('Detail', {fiml_id : id_film});
@@ -84,27 +79,39 @@ class HomeScreen extends Component{
           } }/>
           <View style = {styles.containerCalendar}>
                 <Image
-                   style = {{flex : 1, marginLeft : 5}}
+                   style = {{flex : 1, marginLeft : 9, marginTop : 6}}
                    resizeMode = {'center'}
-                   source = {require('../../img/imgCalendar2.png')}
+                   source = {require('../../img/imgCalendar.png')}
                 />
-                <View style = {{flex : 9, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
+                <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
                   <Text style = {styles.textCalendar}>Upcoming Movies</Text>
+                </View>
+                <View style = {{flex : 5, justifyContent : 'center', marginRight : 10, marginTop : 8, alignItems : 'flex-end'}}>
+                  <TouchableOpacity>
+                    <Text style = {[styles.textCalendar, {color : 'red', fontStyle : 'italic'}]}>More movies</Text>
+                  </TouchableOpacity >
                 </View>
 
           </View>
-          <OnAirMovies />
+          <Upcoming onPress = {(id_film)=> {
+            this.props.navigation.navigate('Detail', {fiml_id : id_film});
+            console.log("id_film", id_film);
+          } }/>
           <View style = {styles.containerCalendar}>
                 <Image
-                   style = {{flex : 1, marginLeft : 5}}
+                   style = {{flex : 1, marginLeft : 9}}
                    resizeMode = {'center'}
-                   source = {require('../../img/imgCalendar2.png')}
+                   source = {require('../../img/imgCalendar.png')}
                 />
-                <View style = {{flex : 9, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
+                <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
                   <Text style = {styles.textCalendar}>Movie Theaters</Text>
                 </View>
-
-         </View>
+                <View style = {{flex : 5, justifyContent : 'center', marginRight : 10, marginTop : 8, alignItems : 'flex-end'}}>
+                  <TouchableOpacity>
+                    <Text style = {[styles.textCalendar, {color : 'red', fontStyle : 'italic'}]}>More movies</Text>
+                  </TouchableOpacity >
+                </View>
+          </View>
          <MovieTheater />
       </ScrollView>
   );
@@ -144,7 +151,7 @@ const styles = StyleSheet.create({
       height : height /15, justifyContent : 'center', alignItems : 'center'
     },
     textCalendar : {
-      color : 'white', fontStyle : 'italic'
+      color : 'white', fontStyle : 'normal', flex : 1, paddingTop : 10
     }
 });
 export default MainNavigator;

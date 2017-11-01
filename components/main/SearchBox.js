@@ -21,6 +21,7 @@ export default class SearchBox extends Component<{}> {
              style={[styles.textInput, {fontFamily: 'aardvarkcafe'}]}
              onChangeText={(search) => this.setState({search})}
              placeholder = "Search movies"
+             placeholderTextColor= '#69657D'
              underlineColorAndroid = "transparent"
              value={this.state.text}
            />
@@ -41,11 +42,13 @@ const styles = StyleSheet.create({
     margin : 5,
     marginTop : 10,
     height : height /14,
-    backgroundColor : 'white',
-    flexDirection : 'row'
+    backgroundColor : '#231F41',
+    flexDirection : 'row',
+    borderColor : 'white', borderWidth : 0.8,
   },
   textInput : {
-    backgroundColor : 'white',
+    color : 'white',
+    backgroundColor : '#231F41',
     flex : 9,
     textAlign: 'center',
   },

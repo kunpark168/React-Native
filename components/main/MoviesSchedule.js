@@ -40,7 +40,9 @@ export default class MoviesSchedule extends Component<{}> {
                 <View style = {styles.itemDate}>
                   <TouchableOpacity>
                     <Text style = {{fontSize : 22, color : '#69657D'}}>{item.dateOfMonth}</Text>
-                    <Text style = {{fontSize : 12, color : '#69657D'}}>{item.dayOfWeek}</Text>
+                    <View style = {{justifyContent : 'center', alignItems : 'center', marginBottom : 2}}>
+                      <Text style = {{fontSize : 12, color : '#69657D'}}>{item.dayOfWeek}</Text>
+                    </View>
                   </TouchableOpacity>
                 </View>
             }
@@ -54,13 +56,13 @@ const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   listDate : {
     marginLeft : 10, marginRight : 10,
-    height : height /12,
+    height : height /13.2,
   },
   itemDate : {
     flex : 1, backgroundColor :'#1A1736',
     borderColor : 'white',
     borderWidth : 0.4,
-    width : height/11,
+    width : height/13.2,
     justifyContent : 'center', alignItems : 'center'
   },
 });
