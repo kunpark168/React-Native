@@ -4,10 +4,9 @@ import MoviesSwiper from "./MoviesSwiper";
 import SearchBox from "./SearchBox";
 import MoviesSchedule from "./MoviesSchedule";
 import OnAirMovies from "./OnAirMovies";
-import UpcomingMovie from "./UpcomingMovie";
 import Upcoming from "./Upcoming";
 import MovieTheater from "./MovieTheater";
-import MovieDetail from "../movieDetail/MovieDetail"
+import MovieDetail from "../detail/MovieDetail"
 import {
  View,
  StyleSheet,

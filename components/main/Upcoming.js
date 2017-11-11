@@ -24,8 +24,6 @@ export default class Upcoming extends Component<{}> {
       for (let i = 0; i<5; i++){
           arrMoviesUpcoming [i] = this.state.arrMovies [i];
       }
-      console.log("mang");
-      console.log(arrMoviesUpcoming);
     }
       return (
       <View >
