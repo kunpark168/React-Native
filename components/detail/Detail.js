@@ -13,7 +13,9 @@ import {
   FlatList,
   Animated
 } from 'react-native';
-
+import {
+ StackNavigator,
+} from 'react-navigation';
 export default class MovieDetail extends Component<{}> {
   static navigationOptions = {
     header : null,
@@ -209,7 +211,7 @@ export default class MovieDetail extends Component<{}> {
             <Text style = {styles.mediumText}>{this.state.returnData.film_category}</Text>
 
             <TouchableOpacity style = {styles.trailerButton}
-              onPress = {this.watchTrailer}>
+              onPress = {(id_film)=>{this.props.navigation.navigate('Player', {fiml_id : id_film});}}>
               <View style = {styles.horizontalView}>
                 <Image style = {styles.playIcon}
                   source={require('../../img/play.png')} />
@@ -274,7 +276,6 @@ export default class MovieDetail extends Component<{}> {
     );
   }
 }
-
 
 const styles = StyleSheet.create({
 

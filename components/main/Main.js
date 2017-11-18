@@ -6,7 +6,8 @@ import MoviesSchedule from "./MoviesSchedule";
 import OnAirMovies from "./OnAirMovies";
 import Upcoming from "./Upcoming";
 import MovieTheater from "./MovieTheater";
-import MovieDetail from "../detail/MovieDetail"
+import MovieDetail from "../detail/MovieDetail";
+import Player from '../detail/Player.js';
 import {
  View,
  StyleSheet,
@@ -138,7 +139,8 @@ class HomeScreen extends Component{
 }
 const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
-  Detail : { screen: MovieDetail }
+  Detail : { screen: MovieDetail },
+  Player: {screen: Player}
 });
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({

@@ -117,6 +117,7 @@ export default class OnAirMovies extends Component<{}> {
     });
   }
 }
+
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   containerOnAirMovies : {

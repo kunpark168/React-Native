@@ -12,9 +12,12 @@ import {
   ActivityIndicator,
   FlatList,
   Animated,
+  Alert,
   Dimensions
 } from 'react-native';
-
+import {
+ StackNavigator,
+} from 'react-navigation';
 export default class MovieDetail extends Component<{}> {
   static navigationOptions = {
     header : null,
@@ -63,6 +66,7 @@ export default class MovieDetail extends Component<{}> {
           this.setState ({
             arrGenre : arrGenreFlag
           });
+          youtube_id = this.state.returnData;
           console.log(this.state.returnData);
         }
       })
@@ -227,8 +231,9 @@ export default class MovieDetail extends Component<{}> {
         <View>
           <Text style = {[styles.largeText, {marginTop : 10, marginLeft : 10}]}>{this.state.returnData.film_name_vn} - {this.state.returnData.film_name_en}</Text>
         </View>
+
         <TouchableOpacity style = {[styles.trailerButton, {marginTop : 7, marginBottom : 7}]}
-            onPress = {this.watchTrailer}>
+            onPress = {()=>{this.props.navigation.navigate('Player', {media_id : this.state.returnData.media_id, film_name_vn : this.state.returnData.film_name_vn, film_name_en : this.state.returnData.film_name_en})}}>
             <View style = {{flexDirection : 'row', justifyContent : 'center'}}>
               <Image style = {styles.playIcon}
                 source={require('../../img/imgPlay.png')} />
