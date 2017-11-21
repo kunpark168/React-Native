@@ -11,15 +11,26 @@ export default class SearchBox extends Component<{}> {
   constructor(props) {
     super(props);
     this.state = {
-      search: '',
+      search: ''
     };
+    this.getText = this.getText.bind(this);
+  }
+  getText(){
+    var text = this.state.search;
+    console.log(text);
+    this.props.onGetText(text);
   }
   render() {
+
     return (
       <View style = {styles.search}>
           <TextInput
              style={[styles.textInput, {fontFamily: 'aardvarkcafe'}]}
-             onChangeText={(search) => this.setState({search})}
+             onChangeText={(search) => this.setState({search: search})}
+             onFocus={this.props.onFocus}
+             onBlur={this.props.onBlur}
+             onChange={this.props.onGetText}
+             returnKeyType = "search"
              placeholder = "Search movies"
              placeholderTextColor= '#69657D'
              underlineColorAndroid = "transparent"

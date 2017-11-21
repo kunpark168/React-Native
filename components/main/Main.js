@@ -6,7 +6,8 @@ import MoviesSchedule from "./MoviesSchedule";
 import OnAirMovies from "./OnAirMovies";
 import Upcoming from "./Upcoming";
 import MovieTheater from "./MovieTheater";
-import MovieDetail from "../detail/MovieDetail"
+import MovieDetail from "../detail/MovieDetail";
+import SearchView from "../search/SearchView";
 import {
  View,
  StyleSheet,
@@ -15,7 +16,8 @@ import {
  Image,
  Text,
  ScrollView,
- TouchableOpacity
+ TouchableOpacity,
+ BackHandler
 } from 'react-native';
 import {
  StackNavigator,
@@ -32,15 +34,53 @@ class HomeScreen extends Component{
                     {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/trong-tung-nhip-tho-15090705538653.jpg"},
                     {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/little-pony-15090706337422.jpg"},
                     {banner_url : "https://s3img.vcdn.vn/123phim/2017/10/blade-runner-15090790192049.jpg"}],
+      isSearch: false,
+      isBlur: false
     };
 }
+
+onFocus(){
+  this.setState({
+    isSearch: true
+  });
+  console.log("is searching");
+}
+onBlur(){
+  this.setState({
+    isBlur: true
+  });
+}
   render() {
-   return (
-      <ScrollView style = {styles.container}>
+    if(this.state.isSearch == true){
+      return (
+        <ScrollView style = {styles.container}>
            <StatusBar
                  backgroundColor="#231F41"
                  barStyle="light-content"/>
-           <SearchBox />
+           {/* <SearchBox onBlur={()=>this.onBlur()}/> */}
+      </ScrollView>
+    )
+  }
+   return (
+      <ScrollView style = {styles.container}>
+
+            <TouchableOpacity onPress={()=>{this.props.navigation.navigate('SearchView')}}>
+              {/* <SearchBox onFocus = {()=>{this.props.navigation.navigate('SearchView')}}/> */}
+              <StatusBar
+                    backgroundColor="#231F41"
+                    barStyle="light-content"/>
+              <View style = {styles.search}>
+                <Text style={styles.textPlaceHolder}>Search movies</Text>
+                <View style = {styles.containerSearch}>
+                  <Image
+                    style = {styles.iconSearch}
+                    resizeMode = {'center'}
+                    source = {require('../../img/imgSearch.png')}
+                  />
+                </View>
+              </View>
+            </TouchableOpacity>
+
            <MoviesSwiper linkPoster1 = {this.state.dataSwiper[0].banner_url}
                          linkPoster2 = {this.state.dataSwiper[1].banner_url}
                          linkPoster3 = {this.state.dataSwiper[2].banner_url}
@@ -138,7 +178,8 @@ class HomeScreen extends Component{
 }
 const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
-  Detail : { screen: MovieDetail }
+  Detail : { screen: MovieDetail },
+  SearchView: {screen: SearchView}
 });
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
@@ -151,6 +192,31 @@ const styles = StyleSheet.create({
     },
     textCalendar : {
       color : 'white', fontStyle : 'normal', flex : 1, paddingTop : 10
+    },
+    search : {
+      margin : 5,
+      marginTop : 10,
+      height : height /14,
+      backgroundColor : '#231F41',
+      flexDirection : 'row',
+      borderColor : 'white', borderWidth : 0.8,
+    },
+    containerSearch : {
+      height : height /14, width : height /14,
+      justifyContent : 'center', alignItems : 'center',
+      flex : 1
+    },
+    textPlaceHolder:{
+      color: '#69657D',
+      flex:1,
+      marginTop: height/56,
+      justifyContent: 'center',
+      textAlign: 'center',
+      alignItems: 'center',
+      flex:9
+    },
+    iconSearch : {
+      flex : 1
     }
 });
 export default MainNavigator;
