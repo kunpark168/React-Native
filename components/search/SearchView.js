@@ -23,6 +23,8 @@ export default class SearchView extends Component<{}> {
     }
     this.onBlur = this.onBlur.bind(this);
     this.onFocus = this.onFocus.bind(this);
+    this.convertUnicode = this.convertUnicode.bind(this);
+    this.convertUnicodeWord = this.convertUnicodeWord.bind(this);
   }
   componentDidMount() {
     this.fetchData();
@@ -68,25 +70,47 @@ export default class SearchView extends Component<{}> {
   }
   filterData(data1, data2, keyword){
     var list = [];
-    console.log(keyword);
+    console.log(this.convertUnicodeWord(keyword));
     for(let i = 0; i< data1.length; i++){
-      let tmp = data1[i].film_name.toLowerCase();
-      console.log(tmp.indexOf(keyword.toLowerCase()));
-      console.log(data1[i].film_name.toLowerCase());
-      if(data1[i].film_name.toLowerCase().indexOf(keyword.toLowerCase()) > -1){
+      let name = this.convertUnicode(data1[i].film_name);
+      console.log(name.indexOf(keyword));
+      console.log(name);
+      if(name.indexOf(keyword) > -1){
         list.push({'id': data1[i].film_id, 'name': data1[i].film_name, 'image': data1[i].poster_thumb});
       }
     }
     for(let i = 0; i< data2.length; i++){
-      let tmp = data2[i].film_name.toLowerCase();
-      console.log(tmp.indexOf(keyword.toLowerCase()));
-      console.log(data2[i].film_name.toLowerCase());
-      if(data2[i].film_name.toLowerCase().indexOf(keyword.toLowerCase()) > -1){
+      let name = this.convertUnicode(data2[i].film_name);
+      console.log(name.indexOf(keyword));
+      console.log(name);
+      if(name.indexOf(keyword) > -1){
         list.push({'id': data2[i].film_id, 'name': data2[i].film_name, 'image': data2[i].poster_thumb});
       }
     }
     console.log(list);
     return list;
+  }
+  convertUnicode(data){
+    var str = data;
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");
+    str = str.replace(/đ/g,"d");
+    return str;
+  }
+  convertUnicodeWord(data){
+    var str = data;
+    console.log("hihi "+str);
+    str.replace("ữ", "a");
+    console.log("hihihi" +str);
+
+    // if(str.indexOf(" "))
+    //   str.replace(" ", "u");
+    return str;
   }
   onFocus(){
     this.setState({
