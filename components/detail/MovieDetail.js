@@ -71,7 +71,7 @@ export default class MovieDetail extends Component<{}> {
       .catch((error)=>{
         console.error(error);
       });
-      console.log(this.getStartEndDate());
+      //console.log(this.getStartEndDate());
       let JSONSESSION = JSON.parse(`{"param": {"url": "/session/list?cinema_id=-1&film_id=${params.fiml_id}&start_date=${this.getStartEndDate()[0]}&end_date=${this.getStartEndDate()[1]}&location_id=1", "keyCache": "no-cache"}, "method": "GET"}`);
       fetch('http://www.123phim.vn/apitomapp',{
         method:'POST',
@@ -224,8 +224,8 @@ export default class MovieDetail extends Component<{}> {
   render() {
     if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
       return(
-        <View style={{flex:1, paddingTop: 20}}>
-          {/* <ActivityIndicator/> */}
+        <View style={{flex:1, paddingTop: 20, backgroundColor:'#231F41'}}>
+          <ActivityIndicator/>
         </View>
       );
     }
