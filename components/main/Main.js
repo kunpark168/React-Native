@@ -81,10 +81,10 @@ onBlur(){
               </View>
             </TouchableOpacity>
 
-           <MoviesSwiper linkPoster1 = {this.state.dataSwiper[0].banner_url}
+           {/* <MoviesSwiper linkPoster1 = {this.state.dataSwiper[0].banner_url}
                          linkPoster2 = {this.state.dataSwiper[1].banner_url}
                          linkPoster3 = {this.state.dataSwiper[2].banner_url}
-                         linkPoster4 = {this.state.dataSwiper[3].banner_url} />
+                         linkPoster4 = {this.state.dataSwiper[3].banner_url} /> */}
             <View style = {styles.containerCalendar}>
                   <Image
                      style = {{flex : 1, marginLeft : 5, marginTop : 6}}

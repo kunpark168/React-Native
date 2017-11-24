@@ -31,6 +31,8 @@ export default class MovieDetail extends Component<{}> {
       reload: false
     }
     this.getDateOfWeek = this.getDateOfWeek.bind(this);
+    this.getStartEndDate = this.getStartEndDate.bind(this);
+    this.changeDateFormat = this.changeDateFormat.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
   }
   componentDidMount(){
@@ -69,14 +71,15 @@ export default class MovieDetail extends Component<{}> {
       .catch((error)=>{
         console.error(error);
       });
-
+      console.log(this.getStartEndDate());
+      let JSONSESSION = JSON.parse(`{"param": {"url": "/session/list?cinema_id=-1&film_id=${params.fiml_id}&start_date=${this.getStartEndDate()[0]}&end_date=${this.getStartEndDate()[1]}&location_id=1", "keyCache": "no-cache"}, "method": "GET"}`);
       fetch('http://www.123phim.vn/apitomapp',{
         method:'POST',
         headers:{
           'Accept':'application/json',
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({"param": {"url": "/session/list?cinema_id=-1&film_id=1356&start_date=20171024&end_date=20171031&location_id=1", "keyCache": "no-cache"}, "method": "GET"})
+        body:JSON.stringify(JSONSESSION)
       })
       .then((response)=>response.json())
       .then((responseJson)=>{
@@ -108,7 +111,28 @@ export default class MovieDetail extends Component<{}> {
         console.error(error);
       })
   }
+  getStartEndDate(){
+    let today = new Date();
+    let list = [];
+    const addDays = (date, days)=>{
+      var result = new Date(date);
+      result.setDate(result.getDate() + days);
+      return result;
+    };
+    let day1 = this.changeDateFormat(today.getDate()), month1 = this.changeDateFormat(today.getMonth() + 1), year1 = today.getFullYear();
+    let day2 =this.changeDateFormat(addDays(today, 7).getDate()), month2 = this.changeDateFormat(addDays(today, 7).getMonth()+1), year2= addDays(today, 7).getFullYear();
 
+    list.push(year1+"-"+month1+"-"+day1);
+    list.push(year2+"-"+month2+"-"+day2);
+    return list;
+  }
+  changeDateFormat(number){
+    let result = number;
+    if(number < 10){
+      result = "0"+number;
+    }
+    return result;
+  }
   getDateOfWeek(){
     let today = new Date();
     var weekDates = [];
@@ -201,7 +225,7 @@ export default class MovieDetail extends Component<{}> {
     if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
       return(
         <View style={{flex:1, paddingTop: 20}}>
-          <ActivityIndicator/>
+          {/* <ActivityIndicator/> */}
         </View>
       );
     }
