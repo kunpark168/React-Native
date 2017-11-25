@@ -9,11 +9,15 @@ import {
   Image,
   TouchableOpacity,
   Picker,
+  Alert,
   ActivityIndicator,
   FlatList,
   Animated,
   Dimensions
 } from 'react-native';
+import {
+ StackNavigator,
+} from 'react-navigation';
 
 export default class MovieDetail extends Component<{}> {
   static navigationOptions = {
@@ -29,8 +33,10 @@ export default class MovieDetail extends Component<{}> {
       cineId:0,
       day: new Date().getDate(),
       reload: false
-    }
+    };
     this.getDateOfWeek = this.getDateOfWeek.bind(this);
+    this.getStartEndDate = this.getStartEndDate.bind(this);
+    this.changeDateFormat = this.changeDateFormat.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
   }
   componentDidMount(){
@@ -63,20 +69,22 @@ export default class MovieDetail extends Component<{}> {
           this.setState ({
             arrGenre : arrGenreFlag
           });
+          youtube_id = this.state.returnData;
           console.log(this.state.returnData);
         }
       })
       .catch((error)=>{
         console.error(error);
       });
-
+      //console.log(this.getStartEndDate());
+      let JSONSESSION = JSON.parse(`{"param": {"url": "/session/list?cinema_id=-1&film_id=${params.fiml_id}&start_date=${this.getStartEndDate()[0]}&end_date=${this.getStartEndDate()[1]}&location_id=1", "keyCache": "no-cache"}, "method": "GET"}`);
       fetch('http://www.123phim.vn/apitomapp',{
         method:'POST',
         headers:{
           'Accept':'application/json',
           'Content-Type':'application/json'
         },
-        body:JSON.stringify({"param": {"url": "/session/list?cinema_id=-1&film_id=1356&start_date=20171024&end_date=20171031&location_id=1", "keyCache": "no-cache"}, "method": "GET"})
+        body:JSON.stringify(JSONSESSION)
       })
       .then((response)=>response.json())
       .then((responseJson)=>{
@@ -108,7 +116,28 @@ export default class MovieDetail extends Component<{}> {
         console.error(error);
       })
   }
+  getStartEndDate(){
+      let today = new Date();
+      let list = [];
+      const addDays = (date, days)=>{
+        var result = new Date(date);
+        result.setDate(result.getDate() + days);
+        return result;
+      };
+      let day1 = this.changeDateFormat(today.getDate()), month1 = this.changeDateFormat(today.getMonth() + 1), year1 = today.getFullYear();
+      let day2 =this.changeDateFormat(addDays(today, 7).getDate()), month2 = this.changeDateFormat(addDays(today, 7).getMonth()+1), year2= addDays(today, 7).getFullYear();
 
+      list.push(year1+"-"+month1+"-"+day1);
+      list.push(year2+"-"+month2+"-"+day2);
+      return list;
+    }
+  changeDateFormat(number){
+  let result = number;
+  if(number < 10){
+    result = "0"+number;
+  }
+  return result;
+}
   getDateOfWeek(){
     let today = new Date();
     var weekDates = [];
@@ -228,7 +257,7 @@ export default class MovieDetail extends Component<{}> {
           <Text style = {[styles.largeText, {marginTop : 10, marginLeft : 10}]}>{this.state.returnData.film_name_vn} - {this.state.returnData.film_name_en}</Text>
         </View>
         <TouchableOpacity style = {[styles.trailerButton, {marginTop : 7, marginBottom : 7}]}
-            onPress = {this.watchTrailer}>
+            onPress = {()=>{this.props.navigation.navigate('Player', {media_id : this.state.returnData.media_id, film_name_vn : this.state.returnData.film_name_vn, film_name_en : this.state.returnData.film_name_en})}}>
             <View style = {{flexDirection : 'row', justifyContent : 'center'}}>
               <Image style = {styles.playIcon}
                 source={require('../../img/imgPlay.png')} />
