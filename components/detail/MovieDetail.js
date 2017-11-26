@@ -132,12 +132,12 @@ export default class MovieDetail extends Component<{}> {
       return list;
     }
   changeDateFormat(number){
-  let result = number;
-  if(number < 10){
-    result = "0"+number;
-  }
-  return result;
-}
+      let result = number;
+      if(number < 10){
+        result = "0"+number;
+      }
+      return result;
+   }
   getDateOfWeek(){
     let today = new Date();
     var weekDates = [];
@@ -297,7 +297,7 @@ export default class MovieDetail extends Component<{}> {
               </View>
               <View style = {{flexDirection : 'row'}}>
                 <Text style = {{color : 'white', marginLeft : 10, fontSize : 16}}>Age: </Text>
-                <Text style = {{color : 'red', marginLeft : 5, fontSize : 14, marginTop : 2}}>{this.state.returnData.total_rating}</Text>
+                <Text style = {{color : 'red', marginLeft : 5, fontSize : 14, marginTop : 2}}>{this.state.returnData.film_age}</Text>
               </View>
               <View style = {{flexDirection : 'row'}}>
                   <Text style = {{flex : 2, fontSize : 16, marginLeft : 10, color : 'white'}}>Genre : </Text>

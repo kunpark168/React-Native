@@ -125,6 +125,6 @@ const styles = StyleSheet.create({
   },
   onAirMovies : {
     flex : 1,
-    justifyContent : 'space-between', marginBottom : 15, marginRight : 10, borderWidth : 0.8, borderColor : 'white'
+    justifyContent : 'space-between', marginBottom : 5, marginRight : 10, borderWidth : 0.8, borderColor : 'white'
   }
 });

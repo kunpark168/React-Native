@@ -6,7 +6,8 @@ import {
  Dimensions,
  Text,
  TouchableOpacity,
- Image
+ Image,
+ FlatList
 } from 'react-native';
 import {
  StackNavigator,
@@ -26,49 +27,44 @@ export default class Upcoming extends Component<{}> {
       }
     }
       return (
-      <View >
-               <View style = {{flex : 1, flexDirection : 'row'}}>
-                    <TouchableOpacity onPress = {() => {
-                           this.props.onPress (arrMoviesUpcoming[0].film_id)
-                      }}
-                    >
-                      <Image
-                        style={styles.onAirMovies}
-                        source={{uri: arrMoviesUpcoming[0].poster_landscape}}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress = {() => {
-                           this.props.onPress (arrMoviesUpcoming[1].film_id)
-                      }}
-                    >
-                      <Image
-                        style={styles.onAirMovies}
-                        source={{uri: arrMoviesUpcoming[1].poster_landscape}}
-                      />
-                    </TouchableOpacity>
-               </View>
-               <View style = {{flex : 1, flexDirection : 'row'}}>
-                    <TouchableOpacity onPress = {() => {
-                           this.props.onPress (arrMoviesUpcoming[2].film_id)
-                      }}
-                    >
-                      <Image
-                        style={styles.onAirMovies}
-                        source={{uri: arrMoviesUpcoming[2].poster_landscape}}
-                      />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress = {() => {
-                           this.props.onPress (arrMoviesUpcoming[1].film_id)
-                      }}
-                    >
-                      <Image
-                        style={styles.onAirMovies}
-                        source={{uri: arrMoviesUpcoming[1].poster_landscape}}
-                      />
-                    </TouchableOpacity>
-               </View>
-
-      </View>
+          <FlatList
+                style = {{flex : 1, marginLeft : 7, marginRight : 7, marginBottom : 20}}
+                data={this.state.arrMovies}
+                renderItem={({item}) =>
+                  <View style = {{width: 230, height: 180}}>
+                     <View style = {{marginRight : 7, borderColor : 'white', borderWidth : 1}}>
+                         <TouchableOpacity onPress = {() => {
+                                this.props.onPress (item.film_id) }}>
+                             <Image
+                               style={{width: 230, height: 140}}
+                               source={{uri: item.poster_thumb}}
+                             />
+                         </TouchableOpacity>
+                     </View>
+                      <View style={{width: 230, height: 40, marginTop : 2, flexDirection : 'column', marginLeft : 5, justifyContent : 'center'}}>
+                         <Text style = {{color : 'white', fontSize : 13, fontWeight : 'bold', height: 20}}>{item.film_name_vn} - {item.film_name_en}</Text>
+                         <View style = {{flexDirection : 'row', height : 20}}>
+                               <View style = {{flexDirection : 'row', alignItems : 'center', justifyContent : 'center' }}>
+                                   <Image style = {styles.clockIcon}
+                                     source={require('../../img/iconstar.png')} />
+                                   <Image style = {styles.clockIcon}
+                                     source={require('../../img/iconstar.png')} />
+                                   <Image style = {styles.clockIcon}
+                                     source={require('../../img/iconstar.png')} />
+                                   <Image style = {styles.clockIcon}
+                                     source={require('../../img/iconstar.png')} />
+                                   <Image style = {styles.clockIcon}
+                                     source={require('../../img/iconnonstar.png')} />
+                                   <View style = {{width : 146, alignItems : 'flex-end'}}>
+                                       <Text style = {{color : 'white', fontSize : 13}}>{item.publish_date}</Text>
+                                   </View>
+                               </View>
+                         </View>
+                      </View>
+                  </View>
+              }
+              horizontal
+                />
       );
   }
   componentDidMount(){
@@ -82,30 +78,28 @@ export default class Upcoming extends Component<{}> {
     })
     .then((response)=>response.json())
     .then((responseJson)=>{
-       let arrFlag = responseJson.result;
-       let arrMoviesFlag = [];
-      for (let i = 0; i< 5 ; i++){
-        let ob = {key : i, poster_landscape : arrFlag[i].poster_landscape, film_id : arrFlag[i].film_id};
-        arrMoviesFlag [i] = arrFlag[i];
-    }
-      this.setState({
-        arrMovies : arrMoviesFlag
+       this.setState({
+        arrMovies : responseJson.result
       },function(){
       });
     })
     .catch((error)=>{
       console.error(error);
     });
+    console.log(arrMovies);
   }
 }
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
   containerOnAirMovies : {
-    marginBottom : 10,
-    justifyContent : 'space-between'
+     marginBottom : 10,
   },
   onAirMovies : {
-    flex : 1, height : 130, width : 165,marginLeft : 10,
-    justifyContent : 'space-between', borderWidth : 0.8, borderColor : 'white', marginBottom : 10,
+    height : 130, width : 200,marginLeft : 10,
+    borderWidth : 0.8, borderColor : 'white', marginBottom : 10,
+  },
+  clockIcon: {
+    width:12,
+    height:12
   },
 });
