@@ -233,7 +233,7 @@ export default class MovieDetail extends Component<{}> {
         </View>
 
         <TouchableOpacity style = {[styles.trailerButton, {marginTop : 7, marginBottom : 7}]}
-            onPress = {()=>{this.props.navigation.navigate('Player', {media_id : this.state.returnData.media_id, film_name_vn : this.state.returnData.film_name_vn, film_name_en : this.state.returnData.film_name_en})}}>
+            onPress = {()=>{this.props.navigation.navigate('Trailer', {JSON : this.state.returnData})}}>
             <View style = {{flexDirection : 'row', justifyContent : 'center'}}>
               <Image style = {styles.playIcon}
                 source={require('../../img/imgPlay.png')} />

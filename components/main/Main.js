@@ -7,7 +7,7 @@ import OnAirMovies from "./OnAirMovies";
 import Upcoming from "./Upcoming";
 import MovieTheater from "./MovieTheater";
 import MovieDetail from "../detail/MovieDetail";
-import Player from '../detail/Player.js';
+import Trailer from '../detail/Trailer.js';
 import {
  View,
  StyleSheet,
@@ -45,7 +45,7 @@ class HomeScreen extends Component{
            <MoviesSwiper linkPoster1 = {this.state.dataSwiper[0].banner_url}
                          linkPoster2 = {this.state.dataSwiper[1].banner_url}
                          linkPoster3 = {this.state.dataSwiper[2].banner_url}
-                         linkPoster4 = {this.state.dataSwiper[3].banner_url} />
+                         linkPoster4 = {this.state.dataSwiper[2].banner_url} />
             <View style = {styles.containerCalendar}>
                   <Image
                      style = {{flex : 1, marginLeft : 5, marginTop : 6}}
@@ -140,7 +140,7 @@ class HomeScreen extends Component{
 const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
   Detail : { screen: MovieDetail },
-  Player: {screen: Player}
+  Trailer: {screen: Trailer}
 });
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
