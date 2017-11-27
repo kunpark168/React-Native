@@ -210,16 +210,12 @@ export default class MovieDetail extends Component<{}> {
     return resultH +":"+resultM;
   }
   onChangeDate=(day)=>{
-    this.setState({
-      day: day,
-      reload: true
-    });
-  }
-  onChangeCinema(id, cineId){
-    this.setState({
-      id: id,
-      cineId: cineId
-    })
+    if(this.refs.onChangeDate){
+      this.setState({
+        day: day,
+        reload: true
+      });
+    }
   }
   render() {
     if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
@@ -356,7 +352,7 @@ export default class MovieDetail extends Component<{}> {
             renderItem={({item})=>
                 <View style = {styles.dateView}>
                   <Text style = {styles.mediumText}>{item.key}</Text>
-                  <TouchableOpacity style={styles.dateView}
+                  <TouchableOpacity style={styles.dateView} ref="onChangeDate"
                     onPress={()=>this.onChangeDate(item.day)}>
                   <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
                 </View>
