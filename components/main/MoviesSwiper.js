@@ -61,7 +61,7 @@ export default class MoviesSwiper extends Component<{}> {
                  autoplay = {true}>
                  {this.getBannerLinks().map((result, key)=>{
                    return(
-                     <View style={{flex: 1}}>
+                     <View style={{flex: 1}} key={key}>
                          <Image
                              style={{flex : 1}}
                              source={{uri : result}}

@@ -215,11 +215,13 @@ export default class MovieDetail extends Component<{}> {
     return resultH +":"+resultM;
   }
   onChangeDate=(day)=>{
-    this.setState({
-      day: day,
-      reload: true
-    });
-  }
+      if(this.refs.onChangeDate){
+        this.setState({
+          day: day,
+          reload: true
+        });
+      }
+    }
   onChangeCinema(id, cineId){
     this.setState({
       id: id,
@@ -257,7 +259,7 @@ export default class MovieDetail extends Component<{}> {
           <Text style = {[styles.largeText, {marginTop : 10, marginLeft : 10}]}>{this.state.returnData.film_name_vn} - {this.state.returnData.film_name_en}</Text>
         </View>
         <TouchableOpacity style = {[styles.trailerButton, {marginTop : 7, marginBottom : 7}]}
-            onPress = {()=>{this.props.navigation.navigate('Player', {media_id : this.state.returnData.media_id, film_name_vn : this.state.returnData.film_name_vn, film_name_en : this.state.returnData.film_name_en})}}>
+            onPress = {()=>{this.props.navigation.navigate('Trailer', {JSON : this.state.returnData})}}>
             <View style = {{flexDirection : 'row', justifyContent : 'center'}}>
               <Image style = {styles.playIcon}
                 source={require('../../img/imgPlay.png')} />
@@ -361,7 +363,7 @@ export default class MovieDetail extends Component<{}> {
             renderItem={({item})=>
                 <View style = {styles.dateView}>
                   <Text style = {styles.mediumText}>{item.key}</Text>
-                  <TouchableOpacity style={styles.dateView}
+                  <TouchableOpacity style={styles.dateView} ref="onChangeDate"
                     onPress={()=>this.onChangeDate(item.day)}>
                   <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
                 </View>

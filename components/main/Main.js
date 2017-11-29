@@ -9,7 +9,7 @@ import UpcomingList from "./UpcomingList";
 import OnAirMovieList from "./OnAirMovieList"
 import MovieTheater from "./MovieTheater";
 import MovieDetail from "../detail/MovieDetail";
-import Player from "../detail/Player";
+import Trailer from "../detail/Trailer";
 import SearchView from "../search/SearchView";
 import {
  View,
@@ -167,7 +167,7 @@ render() {
 const MainNavigator = StackNavigator({
   Home: { screen: HomeScreen },
   Detail : { screen: MovieDetail },
-  Player: {screen: Player},
+  Trailer: {screen: Trailer},
   SearchView: {screen: SearchView},
   UpcomingList : {screen: UpcomingList},
   OnAirMovieList : {screen : OnAirMovieList}
