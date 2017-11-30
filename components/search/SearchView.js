@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import SearchBox from "../main/SearchBox";
 import LoadingView from "./LoadingView";
 import EmptyView from "./EmptyView";
+import MovieDetail from "../detail/MovieDetail";
 import {
-  View, Text, StyleSheet, FlatList, StatusBar,Dimensions, ScrollView, TextInput, Image
+  View, Text, StyleSheet, FlatList, StatusBar,Dimensions, ScrollView, TextInput, Image, TouchableOpacity,
 } from 'react-native';
 import {
  StackNavigator,
@@ -222,17 +222,25 @@ export default class SearchView extends Component<{}> {
         <FlatList
           data={this.filterData(this.state.returnData1, this.state.returnData2, this.state.search)}
           renderItem={({item})=>
-          <View style = {styles.list}>
-            <Image style={styles.poster}
-              source={{uri: item.image}}></Image>
-              <Text style={styles.text}>{item.name}</Text>
-          </View>}
+
+            <TouchableOpacity onPress={()=>
+              {this.props.navigation.navigate('Detail',{fiml_id:item.id})}}>
+              <View style = {styles.list}>
+                <Image style={styles.poster}
+                       source={{uri: item.image}}></Image>
+                <Text style={styles.text}>{item.name}</Text>
+              </View>
+            </TouchableOpacity>}
           keyExtractor={(item, index) => index}>
         </FlatList>
       </ScrollView>
     );
   }
 };
+const MainNavigator = StackNavigator({
+  SearchView: {screen: SearchView},
+  Detail : { screen: MovieDetail },
+});
 const { height } = Dimensions.get ('window');
 const styles = StyleSheet.create({
    container : {

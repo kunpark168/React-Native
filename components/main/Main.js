@@ -39,17 +39,6 @@ class HomeScreen extends Component{
     };
 }
 
-onFocus(){
-  this.setState({
-    isSearch: true
-  });
-  console.log("is searching");
-}
-onBlur(){
-  this.setState({
-    isBlur: true
-  });
-}
   render() {
     if(this.state.isSearch == true){
       return (
