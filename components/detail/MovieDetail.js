@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import Panel from './Panel';
+import ExpandableTextView from './ExpandableTextView';
+
 import {
   AppRegistry,
   StyleSheet,
@@ -231,9 +233,128 @@ export default class MovieDetail extends Component<{}> {
   render() {
     if(this.state.isLoading || this.state.isLoading2 || this.state.isLoading3){
       return(
-        <View style={{flex:1, paddingTop: 20}}>
-          <ActivityIndicator/>
-        </View>
+        <ScrollView style = {styles.container}>
+          <View style = {styles.search}>
+              <View style = {styles.containerSearch}>
+                <Image
+                  style = {styles.iconSearch}
+                  resizeMode = {'center'}
+                  source = {require('../../img/imgBack.png')}
+                />
+              </View>
+              <View style = {styles.containerTitle}>
+                <Text style={styles.titleMovie}></Text>
+              </View>
+          </View>
+
+          <View>
+            <View style={styles.poster_landscape}>
+               <ActivityIndicator size='large' style={{alignItems : 'center'}}/>
+            </View>
+          </View>
+          <View>
+            <Text style = {[styles.largeText, {marginTop : 10, marginLeft : 10}]}>{""} - {""}</Text>
+          </View>
+          <TouchableOpacity style = {[styles.trailerButton, {marginTop : 7, marginBottom : 7}]}
+              onPress = {this.watchTrailer}>
+              <View style = {{flexDirection : 'row', justifyContent : 'center'}}>
+                <Image style = {styles.playIcon}
+                  source={require('../../img/imgPlay.png')} />
+                <Text style = {[styles.buttonText, {marginTop : 2}]}>Play Trailer</Text>
+              </View>
+          </TouchableOpacity>
+          <View style = {styles.containerTime}>
+                <View style = {{flex : 7, flexDirection : 'row'}}>
+                       <View style = {{marginLeft : 10}}>
+                            <Text style = {{color : 'white', fontSize : 16}}>Movie Version : </Text>
+                       </View>
+                       <View>
+                            <Text style = {{marginTop : 4, marginLeft : 2, color : 'red', fontSize : 12}}></Text>
+                       </View>
+                </View>
+                <View style = {{marginTop : 5, flex : 3, alignItems : 'center', flexDirection : 'row', justifyContent : 'flex-end'}}>
+                       <View style = {{justifyContent : 'center', alignItems : 'flex-end', flex : 2.5}}>
+                          <Text style = {{fontSize : 13, color : 'white'}}>0 phút</Text>
+                       </View>
+                       <Image
+                        style = {{marginRight : 10, height : height/34, width : height/34, marginLeft : 5}}
+                        resizeMode = {'center'}
+                        source = {require('../../img/clock.png')}
+                       />
+                </View>
+          </View>
+          <View style = {[styles.containerTime, {marginLeft :  10, }]}>
+              <View style = {{flex : 3, flexDirection : 'row'}}>
+                    <Text style = {{color : 'white', fontSize : 16}}>Country : </Text>
+                    <Text style = {{marginTop : 2, marginLeft : 2, color : 'red', fontSize : 14}}></Text>
+              </View>
+          </View>
+          <View>
+                <View style = {{flexDirection : 'row'}}>
+                  <Text style = {{color : 'white', marginLeft : 10, fontSize : 16}}>Rate Count : </Text>
+                  <Text style = {{color : 'red', marginLeft : 5, fontSize : 14, marginTop : 2}}></Text>
+                </View>
+                <View style = {{flexDirection : 'row'}}>
+                  <Text style = {{color : 'white', marginLeft : 10, fontSize : 16}}>Age: </Text>
+                  <Text style = {{color : 'red', marginLeft : 5, fontSize : 14, marginTop : 2}}></Text>
+                </View>
+                <View style = {{flexDirection : 'row'}}>
+                    <Text style = {{flex : 2, fontSize : 16, marginLeft : 10, color : 'white'}}>Genre : </Text>
+                    <View style = {{flex : 5, paddingRight : 10}}>
+
+                   </View>
+                   <View style = {{flex : 3, alignItems : 'center', marginRight : 10}}>
+                       <View style = {{flexDirection : 'row'}}>
+                           <Image style = {styles.clockIcon}
+                             source={require('../../img/imgStar.png')} />
+                           <Image style = {styles.clockIcon}
+                             source={require('../../img/imgStar.png')} />
+                           <Image style = {styles.clockIcon}
+                             source={require('../../img/imgStar.png')} />
+                           <Image style = {styles.clockIcon}
+                             source={require('../../img/imgStar.png')} />
+                           <Image style = {styles.clockIcon}
+                             source={require('../../img/imgStar.png')} />
+                       </View>
+                       <View>
+                           <Text style = {[styles.mediumText, {paddingLeft : 5}]}>0 / 10</Text>
+                       </View>
+                   </View>
+                </View>
+          </View>
+          <View style = {styles.containerCalendar}>
+                <Image
+                   style = {{flex : 1}}
+                   resizeMode = {'center'}
+                   source = {require('../../img/imgCalendar.png')}
+                />
+                <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
+                  <Text style = {styles.textCalendar}>Movie Info</Text>
+                </View>
+          </View>
+          <Text style = {styles.infoText}></Text>
+
+          <ScrollView horizontal={true} showsVerticalScrollIndicator={false} style={styles.seperatedView}>
+
+          </ScrollView>
+          <ScrollView horizontal={true} style={styles.seperatedView}>
+            <FlatList horizontal={true}
+              data={this.getDateOfWeek()}
+              renderItem={({item})=>
+                  <View style = {styles.dateView}>
+                    <Text style = {styles.mediumText}>{item.key}</Text>
+                    <TouchableOpacity style={styles.dateView} ref="onChangeDate"
+                      onPress={()=>this.onChangeDate(item.day)}>
+                    <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
+                  </View>
+                }
+                keyExtractor={(item, index) => index}></FlatList>
+          </ScrollView>
+
+          <ScrollView>
+            <View style={{padding:10}}></View>
+          </ScrollView>
+        </ScrollView>
       );
     }
     return (
@@ -343,7 +464,10 @@ export default class MovieDetail extends Component<{}> {
                 <Text style = {styles.textCalendar}>Movie Info</Text>
               </View>
         </View>
-        <Text style = {styles.infoText}>{this.state.returnData.film_description_mobile}</Text>
+        <ExpandableTextView
+          style = {styles.infoText}
+          content = {this.state.returnData.film_description_mobile}>
+          </ExpandableTextView>
 
         <ScrollView horizontal={true} showsVerticalScrollIndicator={false} style={styles.seperatedView}>
           <FlatList horizontal={true}
@@ -352,7 +476,7 @@ export default class MovieDetail extends Component<{}> {
             <View style = {styles.actorView}>
               <Image style={styles.actorIcon}
                 source={{uri: item.avatar}}></Image>
-                <Text style={styles.smallText}>{item.artist_name}</Text>
+                <Text style={styles.textActor}>{item.artist_name}</Text>
             </View>}
             keyExtractor={(item, index) => index}>
           </FlatList>
@@ -372,7 +496,7 @@ export default class MovieDetail extends Component<{}> {
         </ScrollView>
 
         <ScrollView>
-          <View style={paddingTop=5}></View>
+          <View style={{paddingTop : 5}}></View>
           {this.getMainCinemas().map((result, key)=>{
             return(
               <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}>
@@ -461,6 +585,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  textActor:{
+    fontSize: 13,
+    color: 'white',
+    textAlign:'center',
+  },
 
   playIcon: {
     width:15,
@@ -484,6 +613,7 @@ const styles = StyleSheet.create({
   },
 
   actorView: {
+    width: height/10,
     alignItems: 'center',
     marginRight: 17
   },

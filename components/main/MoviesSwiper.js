@@ -48,7 +48,7 @@ export default class MoviesSwiper extends Component<{}> {
     if(this.state.isLoading == true){
       return(
         <View style = {styles.carSwiper}>
-          <ActivityIndicator/>
+          <ActivityIndicator size='large' style={{alignItems : 'center'}}/>
         </View>
       );
     }

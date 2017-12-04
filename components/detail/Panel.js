@@ -121,7 +121,8 @@ const styles= StyleSheet.create({
   },
   iconImage:{
     width: 30,
-    height: 30
+    height: 30,
+    marginLeft: 10,
   },
   body:{
     padding:10,
