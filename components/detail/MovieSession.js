@@ -43,8 +43,9 @@ class MovieSession extends Component{
         isLoading: false,
         returnData: responseJson.result,
       });
-      this.getMainCinemas();
-      //console.log(this.getMainCinemas());
+      if(this.state.returnData != undefined || this.state.returnData != null){
+        this.getMainCinemas();
+      }
     })
     .catch((error)=>{
       console.error(error);
@@ -123,20 +124,19 @@ class MovieSession extends Component{
   }
   getListCinemas(id, day){
     var data = this.state.returnData;
-    //console.log(data);
     var list = [], nameList=[];
     for(let i = 0; i<data.length;i++){
-      //console.log(data[i]);
       if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
       && !nameList.includes(data[i].cinema_name)){
-        list.push({name: data[i].cinema_name, /*id: data[i].cinema_id,*/ mainId: data[i].p_cinema_id,
+        list.push({name: data[i].cinema_name, mainId: data[i].p_cinema_id,
         listSession: this.getListSessions(data[i].cinema_id)});
         nameList.push(data[i].cinema_name);
       }
     }
-    this.setState({
-      listCinema: list
-    });
+    if(list.length == 0){
+      list.push({name: "Không có suất chiếu", mainId: '',
+      listSession: ''})
+    }
     return list;
   }
   getMainCinemas(){
@@ -212,19 +212,6 @@ class MovieSession extends Component{
     }
     return tmp;
   }
-  getListSessionById(id, cineId){
-    //id: id cụm rạp
-    //cineId: id rạp con
-    var data = eval('('+ this.state.listSession +')');
-    console.log("getListSessById: "+data);
-    var list = [];
-    for(let i = 0; i< data.length; i++){
-      if(id == data[i].id && cineId == data[i].cineId){
-        list.push(data[i]);
-      }
-    }
-    return list;
-  }
 
   render(){
     if(this.state.isLoading || this.state.isLoading2){
@@ -253,7 +240,7 @@ class MovieSession extends Component{
             <View style={{paddingTop:5}}/>
              {this.state.mainCine.map((result, key)=>{
               return(
-                <Panel key = {result.id} title={result.name} icon={result.icon} 
+                <Panel key = {result.id} title={result.name} icon={result.icon}
                   dataID = {result.id} dataDay = {this.state.day}
                   listCinema = {result.listCinema}
                   listSession = {result.listCinema.listSession}/>

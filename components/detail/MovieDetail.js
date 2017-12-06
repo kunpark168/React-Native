@@ -33,18 +33,12 @@ export default class MovieDetail extends Component<{}> {
       id:0,
       cineId:0,
       day: new Date().getDate(),
-      reload: false,
-      offset: 0,
-      listSession: [],
-      listCinema: [],
-      film_id: 0,
-      
     }
-    this.getDateOfWeek = this.getDateOfWeek.bind(this);
-    this.getStartEndDate = this.getStartEndDate.bind(this);
-    this.changeDateFormat = this.changeDateFormat.bind(this);
-    this.onChangeDate = this.onChangeDate.bind(this);
-    this.getListCinemaById = this.getListCinemaById.bind(this);
+    // this.getDateOfWeek = this.getDateOfWeek.bind(this);
+    // this.getStartEndDate = this.getStartEndDate.bind(this);
+    // this.changeDateFormat = this.changeDateFormat.bind(this);
+    // this.onChangeDate = this.onChangeDate.bind(this);
+    // this.getListCinemaById = this.getListCinemaById.bind(this);
   }
   componentDidMount(){
     const {params} = this.props.navigation.state;
@@ -52,27 +46,26 @@ export default class MovieDetail extends Component<{}> {
       film_id: params.fiml_id
     });
     console.log('film_id1: '+this.state.film_id);
-    let JSONSESSION = JSON.parse(`{"param": {"url": "/session/list?cinema_id=-1&film_id=${params.fiml_id}&start_date=${this.getStartEndDate()[0]}&end_date=${this.getStartEndDate()[1]}&location_id=1", "keyCache": "no-cache"}, "method": "GET"}`);
-    fetch('http://www.123phim.vn/apitomapp',{
-      method:'POST',
-      headers:{
-        'Accept':'application/json',
-        'Content-Type':'application/json'
-      },
-      body:JSON.stringify(JSONSESSION)
-    })
-    .then((response)=>response.json())
-    .then((responseJson)=>{
-      this.setState({
-        isLoading2: false,
-        returnData2: responseJson.result,
-      });
-      // this.getListCinemas(this.state.day);
-      //console.log("session: "+ this.state.returnData2);
-    })
-    .catch((error)=>{
-      console.error(error);
-    });
+    // let JSONSESSION = JSON.parse(`{"param": {"url": "/session/list?cinema_id=-1&film_id=${params.fiml_id}&start_date=${this.getStartEndDate()[0]}&end_date=${this.getStartEndDate()[1]}&location_id=1", "keyCache": "no-cache"}, "method": "GET"}`);
+    // fetch('http://www.123phim.vn/apitomapp',{
+    //   method:'POST',
+    //   headers:{
+    //     'Accept':'application/json',
+    //     'Content-Type':'application/json'
+    //   },
+    //   body:JSON.stringify(JSONSESSION)
+    // })
+    // .then((response)=>response.json())
+    // .then((responseJson)=>{
+    //   this.setState({
+    //     isLoading2: false,
+    //     returnData2: responseJson.result,
+    //   });
+    //
+    // })
+    // .catch((error)=>{
+    //   console.error(error);
+    // });
 
     let JSONOBJECT = JSON.parse(`{"param": {"url": "/film/detail?film_id=${params.fiml_id}", "keyCache": "movie-detail${params.fiml_id}"}, "method": "GET"}`);
       fetch('http://www.123phim.vn/apitomapp',{
@@ -85,9 +78,7 @@ export default class MovieDetail extends Component<{}> {
       })
       .then((response)=>response.json())
       .then((responseJson)=>{
-        //console.log(responseJson);
         console.disableYellowBox = true;
-        //let data = JSON.parse(JSON.stringify(responseJson.result));
         this.setState({
           isLoading: false,
           returnData: responseJson.result,
@@ -102,7 +93,6 @@ export default class MovieDetail extends Component<{}> {
           this.setState ({
             arrGenre : arrGenreFlag
           });
-          //console.log(this.state.returnData);
         }
       })
       .catch((error)=>{
@@ -123,7 +113,6 @@ export default class MovieDetail extends Component<{}> {
           isLoading3: false,
           returnData3: responseJson.result,
         });
-        //console.log(this.state.returnData3);
       })
       .catch((error)=>{
         console.error(error);
@@ -131,138 +120,138 @@ export default class MovieDetail extends Component<{}> {
 
   }
 
-  /*function*/
-getStartEndDate(){
-  let today = new Date();
-  let list = [];
-  const addDays = (date, days)=>{
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  };
-  let day1 = this.changeDateFormat(today.getDate()), month1 = this.changeDateFormat(today.getMonth() + 1), year1 = today.getFullYear();
-  let day2 =this.changeDateFormat(addDays(today, 7).getDate()), month2 = this.changeDateFormat(addDays(today, 7).getMonth()+1), year2= addDays(today, 7).getFullYear();
-
-  list.push(year1+"-"+month1+"-"+day1);
-  list.push(year2+"-"+month2+"-"+day2);
-  return list;
-}
-changeDateFormat(number){
-  let result = number;
-  if(number < 10){
-    result = "0"+number;
-  }
-  return result;
-}
-getDateOfWeek(){
-  let today = new Date();
-  var weekDates = [];
-  let tmp, day = today.getDay() + 1;
-  const addDays = (date, days)=>{
-    var result = new Date(date);
-    result.setDate(result.getDate() + days);
-    return result;
-  };
-  for(let i =0; i<7;i++){
-    if(i == 0){
-      tmp = {key:'Today', day: addDays(today, i).getDate()};
-    }else{
-      if(day <= 7){
-        tmp = {key:'T'+day, day: addDays(today, i).getDate()};
-        day++;
-      }else{
-        day = 2;
-        tmp = {key: 'CN', day: addDays(today, i).getDate()};
-      }
-    }
-    weekDates.push(tmp);
-
-  }
-  return weekDates;
-}
-getMainCinemas(){
-  var data = this.state.returnData3;
-  var list = [], nameList = [];
-  for(let i = 0; i< data.length;i++){
-    if(!nameList.includes(data[i].p_cinema_name))
-    {
-      //this.getListCinemas(this.state.day);
-      list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo,
-      listCinema: this.getListCinemas(data[i].p_cinema_id, this.state.day)});
-      nameList.push(data[i].p_cinema_name);
-    }
-  }
-  this.setState({
-    sessionArr: list,
-  });
-  return list;
-}
-getListCinemas(id, day){
-  var data = this.state.returnData2;
-  var list = [], nameList=[];
-  for(let i = 0; i<data.length;i++){
-    if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
-    && !nameList.includes(data[i].cinema_name)){
-      list.push({name: data[i].cinema_name, /*id: data[i].cinema_id,*/ mainId: data[i].p_cinema_id,
-      listSession: this.getListSessions(data[i].cinema_id)});
-      nameList.push(data[i].cinema_name);
-    }
-  }
-  // if(list.length == 0)
-  //   list.push({name: 'Không có suất chiếu', id: ''});
-  this.setState({
-    listCinema: list
-  });
-  return list;
-}
-getTime(time){
-    let tmp = time.slice(11,16);
-    return tmp;
-}
-calculateEndTime(time, duration){
-  let hours = Math.floor(duration / 60);
-  let mins = duration - hours * 60;
-  let timeHours = Number(time.substr(0,2));
-  let timeMins = Number(time.substr(4));
-  let resultH = hours+timeHours;
-  let resultM = mins + timeMins;
-  return resultH +":"+resultM;
-}
-getListSessions(/*id,*/idCine/*, day*/){
-  //id: id của cụm rạp
-  //idCine: id của riêng từng rạp
-  //day: ngày chiếu
-  var data = this.state.returnData2;
-  var list = [];
-  for(let i = 0; i<data.length;i++){
-    if(/*id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day &&*/
-     idCine == data[i].cinema_id){
-      let time = this.getTime(data[i].session_time);
-      let tmp = time +"~"+this.calculateEndTime(time, Number(data[i].film_duration));
-      list.push(tmp);
-    }
-  }
-  this.setState({
-    listSession : list,
-  });
-}
-getListCinemaById(id){
-  var list = [];
-  var data = this.state.listCinema;
-  for(let i = 0; i< data; i++){
-    if(id == data[i].mainId){
-      list.push(data[i]);
-    }
-  }
-  return list;
-}
-onChangeDate=(day)=>{
-  this.setState({
-    day: day,
-    reload: true
-  });
-  this.getListCinemas(day);
-}
+//   /*function*/
+// getStartEndDate(){
+//   let today = new Date();
+//   let list = [];
+//   const addDays = (date, days)=>{
+//     var result = new Date(date);
+//     result.setDate(result.getDate() + days);
+//     return result;
+//   };
+//   let day1 = this.changeDateFormat(today.getDate()), month1 = this.changeDateFormat(today.getMonth() + 1), year1 = today.getFullYear();
+//   let day2 =this.changeDateFormat(addDays(today, 7).getDate()), month2 = this.changeDateFormat(addDays(today, 7).getMonth()+1), year2= addDays(today, 7).getFullYear();
+//
+//   list.push(year1+"-"+month1+"-"+day1);
+//   list.push(year2+"-"+month2+"-"+day2);
+//   return list;
+// }
+// changeDateFormat(number){
+//   let result = number;
+//   if(number < 10){
+//     result = "0"+number;
+//   }
+//   return result;
+// }
+// getDateOfWeek(){
+//   let today = new Date();
+//   var weekDates = [];
+//   let tmp, day = today.getDay() + 1;
+//   const addDays = (date, days)=>{
+//     var result = new Date(date);
+//     result.setDate(result.getDate() + days);
+//     return result;
+//   };
+//   for(let i =0; i<7;i++){
+//     if(i == 0){
+//       tmp = {key:'Today', day: addDays(today, i).getDate()};
+//     }else{
+//       if(day <= 7){
+//         tmp = {key:'T'+day, day: addDays(today, i).getDate()};
+//         day++;
+//       }else{
+//         day = 2;
+//         tmp = {key: 'CN', day: addDays(today, i).getDate()};
+//       }
+//     }
+//     weekDates.push(tmp);
+//
+//   }
+//   return weekDates;
+// }
+// getMainCinemas(){
+//   var data = this.state.returnData3;
+//   var list = [], nameList = [];
+//   for(let i = 0; i< data.length;i++){
+//     if(!nameList.includes(data[i].p_cinema_name))
+//     {
+//       //this.getListCinemas(this.state.day);
+//       list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo,
+//       listCinema: this.getListCinemas(data[i].p_cinema_id, this.state.day)});
+//       nameList.push(data[i].p_cinema_name);
+//     }
+//   }
+//   this.setState({
+//     sessionArr: list,
+//   });
+//   return list;
+// }
+// getListCinemas(id, day){
+//   var data = this.state.returnData2;
+//   var list = [], nameList=[];
+//   for(let i = 0; i<data.length;i++){
+//     if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
+//     && !nameList.includes(data[i].cinema_name)){
+//       list.push({name: data[i].cinema_name, /*id: data[i].cinema_id,*/ mainId: data[i].p_cinema_id,
+//       listSession: this.getListSessions(data[i].cinema_id)});
+//       nameList.push(data[i].cinema_name);
+//     }
+//   }
+//   // if(list.length == 0)
+//   //   list.push({name: 'Không có suất chiếu', id: ''});
+//   this.setState({
+//     listCinema: list
+//   });
+//   return list;
+// }
+// getTime(time){
+//     let tmp = time.slice(11,16);
+//     return tmp;
+// }
+// calculateEndTime(time, duration){
+//   let hours = Math.floor(duration / 60);
+//   let mins = duration - hours * 60;
+//   let timeHours = Number(time.substr(0,2));
+//   let timeMins = Number(time.substr(4));
+//   let resultH = hours+timeHours;
+//   let resultM = mins + timeMins;
+//   return resultH +":"+resultM;
+// }
+// getListSessions(/*id,*/idCine/*, day*/){
+//   //id: id của cụm rạp
+//   //idCine: id của riêng từng rạp
+//   //day: ngày chiếu
+//   var data = this.state.returnData2;
+//   var list = [];
+//   for(let i = 0; i<data.length;i++){
+//     if(/*id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day &&*/
+//      idCine == data[i].cinema_id){
+//       let time = this.getTime(data[i].session_time);
+//       let tmp = time +"~"+this.calculateEndTime(time, Number(data[i].film_duration));
+//       list.push(tmp);
+//     }
+//   }
+//   this.setState({
+//     listSession : list,
+//   });
+// }
+// getListCinemaById(id){
+//   var list = [];
+//   var data = this.state.listCinema;
+//   for(let i = 0; i< data; i++){
+//     if(id == data[i].mainId){
+//       list.push(data[i]);
+//     }
+//   }
+//   return list;
+// }
+// onChangeDate=(day)=>{
+//   this.setState({
+//     day: day,
+//     reload: true
+//   });
+//   this.getListCinemas(day);
+// }
   render() {
     if(this.state.isLoading){
       return(
@@ -393,9 +382,9 @@ onChangeDate=(day)=>{
                   <Text style = {styles.textCalendar}>Movie Info</Text>
                 </View>
           </View>
-          {/* <ExpandableTextView
+          <ExpandableTextView
             style = {styles.infoText}
-            content = {this.state.returnData.film_description_mobile}></ExpandableTextView> */}
+            content = {this.state.returnData.film_description_mobile}></ExpandableTextView>
           <ScrollView horizontal={true} showsVerticalScrollIndicator={false} style={styles.seperatedView}>
             <FlatList horizontal={true}
               data={this.state.returnData.list_actor}
@@ -408,63 +397,7 @@ onChangeDate=(day)=>{
               keyExtractor={(item, index) => index}>
             </FlatList>
           </ScrollView>
-          {/* <ScrollView horizontal={true} style={styles.seperatedView}>
-            <FlatList horizontal={true}
-              data={this.getDateOfWeek()}
-              renderItem={({item})=>
-                  <View style = {styles.dateView}>
-                    <Text style = {styles.mediumText}>{item.key}</Text>
-                    <TouchableOpacity style={styles.dateView} /*ref="onChangeDate"
-                    onPress={()=>this.onChangeDate(item.day)}>
-                    <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
-                  </View>}
-                keyExtractor={(item, index) => index}></FlatList>
-          </ScrollView> */}
           <MovieSession filmId={this.state.film_id} dataDetail = {this.state.returnData}></MovieSession>
-          {/* <ScrollView>
-            <View style={{paddingTop:5}}></View>
-            {this.getMainCinemas().map((result, key)=>{
-              return(
-                <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}
-                  offset = {this.state.offset}
-                  dataSession= {this.state.returnData2}
-                  dataDetail = {this.state.returnData}
-                  dataID = {result.id} dataDay = {this.state.day}
-                  listCinema = {this.getListCinemaById(result.id)}>
-                  {/* {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
-                    return(
-                      <View style={styles.sessionView} key={prop.id}>
-                        <PanelSmall key = {result.id} title = {prop.name} reload={this.state.reload}
-                          offset={this.state.offset}>
-                          <FlatList
-                            data={this.getListSessions(result.id,prop.id,this.state.day)}
-                            renderItem={({item})=>
-                            <View style={styles.itemTimeView}>
-                              <View style={styles.timeView}>
-                                <Text style = {styles.startTimeText}>{item.start}</Text>
-                                <Text style = {styles.endTimeText}>{item.end}</Text>
-                              </View>
-                              <Text style={styles.versionView}>{item.version}</Text>
-                              <Image style={styles.iconTicket}
-                                resizeMode = {'center'}
-                                source = {require('../../img/icon_ticket.png')}
-                              />
-                            </View>}
-                            keyExtractor={(item, index) => index}></FlatList>
-                        </PanelSmall>
-                        {/* <View style={styles.cinemaName}>
-                          <Text style={styles.nameText}>{prop.name}</Text>
-                          <Image style={styles.iconLocation}
-                            resizeMode = {'center'}
-                            source = {require('../../img/icon_location.png')}
-                          />
-                        </View>
-                      </View>
-                    );})}
-                </Panel>
-              );})}
-            <View style={{padding:10}}></View>
-          </ScrollView> */}
         </ScrollView>
       );
   }

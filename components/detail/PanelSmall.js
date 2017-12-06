@@ -15,27 +15,16 @@ class PanelSmall extends Component{
       icon: props.icon,
       isExpanded: true,
       animation: new Animated.Value(),
-      isClicked: false
     }
-    //this.onClicked = this.onClicked.bind(this);
   }
 
   toggle(){
     let initialValue = this.state.isExpanded? this.state.minHeight:this.state.maxHeight+this.state.minHeight,
         finalValue = this.state.isExpanded? this.state.maxHeight + this.state.minHeight:this.state.minHeight;
-    console.log("offset fdsfsd: "+this.state.offset);
 
     this.setState({
       isExpanded: !this.state.isExpanded,
-      offset: finalValue,
-      reload: this.props.reload(),
     });
-    //this.props.onClicked(this.state.offset);
-    if(this.state.isExpanded == false){
-      this.setState({
-        isClicked: true
-      });
-    }
 
     this.state.animation.setValue(initialValue);
     Animated.spring(
@@ -50,7 +39,6 @@ class PanelSmall extends Component{
     this.setState({
       maxHeight : event.nativeEvent.layout.height*5
     });
-    //console.log("maxHeight: "+this.state.maxHeight);
   }
   _setMinHeight(event){
     this.setState({

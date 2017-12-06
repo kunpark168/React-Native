@@ -16,24 +16,9 @@ class Panel extends Component{
       icon: props.icon,
       isExpanded: true,
       animation: new Animated.Value(),
-      reload: false,
-      offset:0,
-      listCinema: props.listCinema,
-      listSession: props.listSession,
     }
-    console.log("state: "+this.state.listCinema);
-    console.log("title: "+this.state.title);
-    console.log("listSess: "+this.state.listSession);
-    this.reload = this.reload.bind(this);
   }
-  componentWillReceiveProps(nextProps){
-    // if(nextProps.reload != this.state.reload){
-    //   this.setState({
-    //     isExpanded: !this.state.isExpanded,
-    //   });
-    //   this.toggle();
-    // }
-  }
+
   toggle(){
     let initialValue = this.state.isExpanded? this.state.minHeight:this.state.maxHeight+this.state.minHeight,
         finalValue = this.state.isExpanded? this.state.maxHeight + this.state.minHeight:this.state.minHeight;
@@ -60,11 +45,6 @@ class Panel extends Component{
       minHeight : event.nativeEvent.layout.height,
       animation: new Animated.Value(event.nativeEvent.layout.height),
     });
-  }
-  reload(){
-    this.setState({
-      reload: !this.state.reload,
-    })
   }
   render(){
     let icon = this.icons['down'];
@@ -95,7 +75,7 @@ class Panel extends Component{
             {this.props.listCinema.map((result, key)=>{
               return(
                 <View style={styles.sessionView} key={result.id}>
-                  <View style={styles.titleContainer} onLayout={this._setMinHeight.bind(this)} horizontal={true}>
+                  <View style={styles.cinemaContainer}  horizontal={true}>
                     <Text style={styles.nameText}>{result.name}</Text>
                     <Image style={styles.iconLocation}
                       resizeMode = {'center'}
@@ -116,6 +96,8 @@ class Panel extends Component{
                       />
                     </View>}
                     keyExtractor={(item, index) => index}></FlatList>
+                  {/* <PanelSmall title={result.name} key = {result.id}>
+                  </PanelSmall> */}
                 </View>
               );})}
           </View>
@@ -137,6 +119,13 @@ const styles= StyleSheet.create({
     borderColor: '#5a5960',
     borderBottomWidth: 0.5,
   },
+  cinemaContainer:{
+    flexDirection:'row',
+    paddingBottom:20,
+    borderColor: '#5a5960',
+    borderBottomWidth: 0.5,
+    paddingTop:20,
+  },
 
   title:{
     flex : 1,
@@ -145,10 +134,6 @@ const styles= StyleSheet.create({
     paddingTop: 5,
     color: 'white',
     fontSize: 16,
-  },
-
-  button:{
-
   },
   buttonImage:{
     width: 30,
