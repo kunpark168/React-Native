@@ -58,12 +58,12 @@ export default class Upcoming extends Component<{}> {
                       />
                     </TouchableOpacity>
                     <TouchableOpacity onPress = {() => {
-                           this.props.onPress (arrMoviesUpcoming[1].film_id)
+                           this.props.onPress (arrMoviesUpcoming[3].film_id)
                       }}
                     >
                       <Image
                         style={styles.onAirMovies}
-                        source={{uri: arrMoviesUpcoming[1].poster_landscape}}
+                        source={{uri: arrMoviesUpcoming[3].poster_landscape}}
                       />
                     </TouchableOpacity>
                </View>
