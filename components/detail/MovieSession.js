@@ -22,6 +22,9 @@ class MovieSession extends Component{
     this.getListCinemaById = this.getListCinemaById.bind(this);
     this.getListCinemas = this.getListCinemas.bind(this);
     this.getMainCinemas = this.getMainCinemas.bind(this);
+    this.getListSessions = this.getListSessions.bind(this);
+    this.getTime = this.getTime.bind(this);
+    this.calculateEndTime = this.calculateEndTime.bind(this);
   }
   componentDidMount(){
     console.log('film_id2: '+this.state.filmId);
@@ -41,7 +44,8 @@ class MovieSession extends Component{
         returnData: responseJson.result,
       });
       this.getListCinemas(this.state.day);
-      //console.log("session: "+ this.state.returnData);
+      this.getListSessions(this.state.day);
+      console.log("session: "+ this.state.returnData);
     })
     .catch((error)=>{
       console.error(error);
@@ -121,16 +125,16 @@ class MovieSession extends Component{
     if(this.state.listCinema!= null || this.state.listCinema != undefined){
       var data = eval('(' + this.state.listCinema + ')');
       console.log("getByIdData: "+Object.prototype.toString.call(data));
-      console.log("data: "+ data);
+
       for(let i = 0; i< data.length; i++){
         if(id == data[i].mainId){
           list.push(data[i]);
+          console.log("data: "+ data[i]);
         }
         console.log("mainId: "+data[i].mainId);
         console.log("listLength: "+list.length);
       }
     }
-
     return list;
   }
   onChangeDate=(day)=>{
@@ -140,6 +144,7 @@ class MovieSession extends Component{
     });
     console.log('onChangeDate: '+day);
     this.getListCinemas(day);
+    this.getListSessions(day);
   }
   getListCinemas(/*id,*/ day){
     var data = this.state.returnData;
@@ -177,6 +182,77 @@ class MovieSession extends Component{
     //console.log("mainCine: "+list);
     //return list;
   }
+  getTime(time){
+      let tmp = time.slice(11,16);
+      return tmp;
+  }
+  calculateEndTime(time, duration){
+    let hours = Math.floor(duration / 60);
+    let mins = duration - hours * 60;
+    let timeHours = Number(time.substr(0,2));
+    let timeMins = Number(time.substr(4));
+    let resultH = hours+timeHours;
+    let resultM = mins + timeMins;
+    return resultH +":"+resultM;
+  }
+  getFilmVersion(data,data2){
+    //var data = this.state.returnData;
+    var tmp = "";
+    if(data.film_version != ""){
+      if(data.film_version.indexOf("2D")>-1){
+        tmp = "2D-";
+      }else if (data.flim_version.indexOf("3D")>-1){
+        tmp = "3D-";
+      }
+      if(data2.is_voice == 0){
+        tmp += "Phụ đề";
+      }else if(data2.is_voice == 1){
+        tmp += "Lồng tiếng";
+      }
+    }
+    return tmp;
+  }
+  getListSessions(/*id, idCine,*/ day){
+    //id: id của cụm rạp
+    //idCine: id của riêng từng rạp
+    //day: ngày chiếu
+    var data = this.state.returnData;
+    var list = [];
+    for(let i = 0; i<data.length;i++){
+      if(/*id == data[i].p_cinema_id &&*/Number(data[i].session_time.slice(8,10)) == day){/*&& idCine == data[i].cinema_id){*/
+        // let time = this.getTime(data[i].session_time);
+        // let tmp = {id: data[i].p_cinema_id,cineId: data[i].cinema_id,
+        //   time:time +"~"+this.calculateEndTime(time, Number(data[i].film_duration))};
+        let startTime = this.getTime(data[i].session_time);
+        let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
+        let version = this.getFilmVersion(this.props.dataDetail,data[i]);
+        list.push({id: data[i].p_cinema_id,cineId: data[i].cinema_id,
+          start: startTime, end: endTime, version: version});
+      }
+    }
+    this.setState({
+      // listSession : eval('('+list+')'),
+      listSession : JSON.stringify(list),
+    });
+    console.log("getListSession: "+ this.state.listSession);
+    console.log("getListSession type: "+ Object.prototype.toString.call(this.state.listSession));
+    // var myObj = eval('('+this.state.listSession+')');
+    // console.log("getListSessById: "+ myObj);
+    // console.log("type myObj: "+Object.prototype.toString.call(myObj));
+  }
+  getListSessionById(id, cineId){
+    //id: id cụm rạp
+    //cineId: id rạp con
+    var data = eval('('+ this.state.listSession +')');
+    console.log("getListSessById: "+data);
+    var list = [];
+    for(let i = 0; i< data.length; i++){
+      if(id == data[i].id && cineId == data[i].cineId){
+        list.push(data[i]);
+      }
+    }
+    return list;
+  }
   render(){
     if(this.state.isLoading || this.state.isLoading2){
       return(
@@ -185,67 +261,72 @@ class MovieSession extends Component{
         </View>
       );
     }
-    return(
-      <ScrollView style = {styles.container}>
-        <ScrollView horizontal={true} style={styles.seperatedView}>
-          <FlatList horizontal={true}
-            data={this.getDateOfWeek()}
-            renderItem={({item})=>
-                <View style = {styles.dateView}>
-                  <Text style = {styles.mediumText}>{item.key}</Text>
-                  <TouchableOpacity style={styles.dateView} /*ref="onChangeDate"*/
-                  onPress={()=>this.onChangeDate(item.day)}>
-                  <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
-                </View>}
-              keyExtractor={(item, index) => index}></FlatList>
-        </ScrollView>
-        <View>
-          <View style={{paddingTop:5}}></View>
-          {this.state.mainCine.map((result, key)=>{
-            return(
-              <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}
-                offset = {this.state.offset}
-                dataSession= {this.state.returnData2}
-                dataDetail = {this.state.returnData}
-                dataID = {result.id} dataDay = {this.state.day}
-                listCinema = {this.getListCinemaById(result.id)}>
-                {/* {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
-                  return(
-                    <View style={styles.sessionView} key={prop.id}>
-                      <PanelSmall key = {result.id} title = {prop.name} reload={this.state.reload}
-                        offset={this.state.offset}>
-                        <FlatList
-                          data={this.getListSessions(result.id,prop.id,this.state.day)}
-                          renderItem={({item})=>
-                          <View style={styles.itemTimeView}>
-                            <View style={styles.timeView}>
-                              <Text style = {styles.startTimeText}>{item.start}</Text>
-                              <Text style = {styles.endTimeText}>{item.end}</Text>
-                            </View>
-                            <Text style={styles.versionView}>{item.version}</Text>
-                            <Image style={styles.iconTicket}
-                              resizeMode = {'center'}
-                              source = {require('../../img/icon_ticket.png')}
-                            />
-                          </View>}
-                          keyExtractor={(item, index) => index}></FlatList>
-                      </PanelSmall>
-                      {/* <View style={styles.cinemaName}>
-                        <Text style={styles.nameText}>{prop.name}</Text>
-                        <Image style={styles.iconLocation}
-                          resizeMode = {'center'}
-                          source = {require('../../img/icon_location.png')}
-                        />
-                      </View>
-                    </View>
-                  );})}*/}
-               </Panel>
-             );})}
-           <View style={{padding:10}}></View>
-        </View>
-      </ScrollView>
+    else{
+      return(
+        <ScrollView style = {styles.container}>
+          <ScrollView horizontal={true} style={styles.seperatedView}>
+            <FlatList horizontal={true}
+              data={this.getDateOfWeek()}
+              renderItem={({item})=>
+                  <View style = {styles.dateView}>
+                    <Text style = {styles.mediumText}>{item.key}</Text>
+                    <TouchableOpacity style={styles.dateView} /*ref="onChangeDate"*/
+                    onPress={()=>this.onChangeDate(item.day)}>
+                    <Text style = {styles.dateText}>{item.day}</Text></TouchableOpacity>
+                  </View>}
+                keyExtractor={(item, index) => index}></FlatList>
+          </ScrollView>
+          <View>
+            <View style={{paddingTop:5}}/>
+            {this.state.mainCine.map((result, key)=>{
+              return(
+                <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}
+                  offset = {this.state.offset}
+                  dataSession= {this.state.returnData}
+                  dataDetail = {this.props.dataDetail}
+                  dataID = {result.id} dataDay = {this.state.day}
+                  listCinema = {this.getListCinemaById(result.id)}
+                  listSession = {this.state.listSession}>
 
-    );
+                  {/* {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
+                    return(
+                      <View style={styles.sessionView} key={prop.id}>
+                        <PanelSmall key = {result.id} title = {prop.name} reload={this.state.reload}
+                          offset={this.state.offset}>
+                          <FlatList
+                            data={this.getListSessions(result.id,prop.id,this.state.day)}
+                            renderItem={({item})=>
+                            <View style={styles.itemTimeView}>
+                              <View style={styles.timeView}>
+                                <Text style = {styles.startTimeText}>{item.start}</Text>
+                                <Text style = {styles.endTimeText}>{item.end}</Text>
+                              </View>
+                              <Text style={styles.versionView}>{item.version}</Text>
+                              <Image style={styles.iconTicket}
+                                resizeMode = {'center'}
+                                source = {require('../../img/icon_ticket.png')}
+                              />
+                            </View>}
+                            keyExtractor={(item, index) => index}></FlatList>
+                        </PanelSmall>
+                        {/* <View style={styles.cinemaName}>
+                          <Text style={styles.nameText}>{prop.name}</Text>
+                          <Image style={styles.iconLocation}
+                            resizeMode = {'center'}
+                            source = {require('../../img/icon_location.png')}
+                          />
+                        </View>
+                      </View>
+                    );})}*/}
+                 </Panel>
+               );})}
+             <View style={{padding:10}}/>
+          </View>
+        </ScrollView>
+
+      );
+    }
+
   }
 }
 const { height } = Dimensions.get ('window');

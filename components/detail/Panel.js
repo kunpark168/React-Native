@@ -19,25 +19,29 @@ class Panel extends Component{
       reload: false,
       offset:0,
       listCinema: props.listCinema,
-      listSessions: props.listSession,
+      listSession: props.listSession,
     }
     console.log("state: "+this.state.listCinema);
     console.log("title: "+this.state.title);
+    console.log("listSess: "+this.state.listSession);
+    this.getListSessionById = this.getListSessionById.bind(this);
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   if(nextProps.reload !== this.state.reload) {
-  //     this.setState({ reload: nextProps.reload });
-  //     console.log('insides');
-  //   }
-  //   if(this.state.reload && !this.state.isExpanded){
-  //     this.toggle();
-  //     this.setState({
-  //       reload: false
-  //     });
-  //     console.log('inside');
-  //   }
-  // }
+  componentDidMount(){
+    this.getListSessionById();
+  }
+  componentWillReceiveProps(nextProps) {
+    if(nextProps.listSession !== this.state.listSession) {
+      this.setState({ listSession: nextProps.listSession });
+      console.log('insides');
+    }
+    // if(this.state.reload && !this.state.isExpanded){
+    //   this.toggle();
+    //   this.setState({
+    //     reload: false
+    //   });
+    //   console.log('inside');
+    // }
+  }
   toggle(){
     let initialValue = this.state.isExpanded? this.state.minHeight:this.state.maxHeight+this.state.minHeight,
         finalValue = this.state.isExpanded? this.state.maxHeight + this.state.minHeight:this.state.minHeight;
@@ -109,6 +113,23 @@ class Panel extends Component{
     }
     return tmp;
   }
+  getListSessionById(id, cineId){
+    //id: id cụm rạp
+    //cineId: id rạp con
+    var data = eval ('('+this.state.listSession+')');
+    //console.log("con meo: "+ this.state.listSession);
+    console.log(data);
+    var list = [];
+    if(data != undefined || data != null){
+      for(let i = 0; i< data.length; i++){
+        if(id == data[i].id && cineId == data[i].cineId){
+          list.push(data[i]);
+        }
+      }
+      return list;
+    }
+    return [];
+  }
   render(){
     let icon = this.icons['down'];
     if(this.state.isExpanded){
@@ -140,13 +161,13 @@ class Panel extends Component{
           </TouchableOpacity>
           <View style={styles.body} onLayout={this._setMaxHeight.bind(this)}>
             {/* {this.props.children} */}
-            {this.state.listCinema.map((prop, key)=>{
+            {this.props.listCinema.map((prop, key)=>{
               return(
                 <View style={styles.sessionView} key={prop.id}>
                   <PanelSmall key = {this.props.dataID} title = {prop.name} /*reload={this.state.reload}*/
                     offset={this.state.offset}>
                       <FlatList
-                        data={this.getListSessions(this.props.dataDetail,this.props.dataSession,this.props.dataID,prop.id,this.props.dataDay)}
+                        data={this.getListSessionById(this.props.dataID,prop.id)}
                         renderItem={({item})=>
                         <View style={styles.itemTimeView}>
                           <View style={styles.timeView}>

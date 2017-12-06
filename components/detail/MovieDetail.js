@@ -412,7 +412,7 @@ onChangeDate=(day)=>{
                   </View>}
                 keyExtractor={(item, index) => index}></FlatList>
           </ScrollView> */}
-          <MovieSession filmId={this.state.film_id}></MovieSession>
+          <MovieSession filmId={this.state.film_id} dataDetail = {this.state.returnData}></MovieSession>
           {/* <ScrollView>
             <View style={{paddingTop:5}}></View>
             {this.getMainCinemas().map((result, key)=>{
