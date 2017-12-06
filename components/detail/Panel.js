@@ -24,27 +24,20 @@ class Panel extends Component{
     console.log("state: "+this.state.listCinema);
     console.log("title: "+this.state.title);
     console.log("listSess: "+this.state.listSession);
-    this.getListSessionById = this.getListSessionById.bind(this);
+    this.reload = this.reload.bind(this);
   }
-  componentDidMount(){
-    this.getListSessionById();
-  }
-  componentWillReceiveProps(nextProps) {
-    if(nextProps.listSession !== this.state.listSession) {
-      this.setState({ listSession: nextProps.listSession });
-      console.log('insides');
-    }
-    // if(this.state.reload && !this.state.isExpanded){
-    //   this.toggle();
+  componentWillReceiveProps(nextProps){
+    // if(nextProps.reload != this.state.reload){
     //   this.setState({
-    //     reload: false
+    //     isExpanded: !this.state.isExpanded,
     //   });
-    //   console.log('inside');
+    //   this.toggle();
     // }
   }
   toggle(){
     let initialValue = this.state.isExpanded? this.state.minHeight:this.state.maxHeight+this.state.minHeight,
         finalValue = this.state.isExpanded? this.state.maxHeight + this.state.minHeight:this.state.minHeight;
+
     this.setState({
       isExpanded: !this.state.isExpanded,
     });
@@ -56,8 +49,6 @@ class Panel extends Component{
         toValue: finalValue
       }
     ).start();
-    // console.log("finalValue: "+finalValue);
-    // console.log("startValue: "+initialValue);
   }
   _setMaxHeight(event){
     this.setState({
@@ -70,65 +61,10 @@ class Panel extends Component{
       animation: new Animated.Value(event.nativeEvent.layout.height),
     });
   }
-  getListSessions(data1,data,id, idCine, day){
-    var list = [];
-    for(let i = 0; i<data.length;i++){
-      if(id == data[i].p_cinema_id
-        && Number(data[i].session_time.slice(8,10)) == day && idCine == data[i].cinema_id){
-        let startTime = this.getTime(data[i].session_time);
-        let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
-        let version = this.getFilmVersion(data1,data[i]);
-        list.push({start: startTime, end: endTime, version: version});
-      }
-    }
-    return list;
-  }
-  getTime(time){
-    let tmp = time.slice(11,16);
-    return tmp;
-  }
-  calculateEndTime(time, duration){
-    let hours = Math.floor(duration / 60);
-    let mins = duration - hours * 60;
-    let timeHours = Number(time.substr(0,2));
-    let timeMins = Number(time.substr(4));
-    let resultH = hours+timeHours;
-    let resultM = mins + timeMins;
-    return resultH +":"+resultM;
-  }
-  getFilmVersion(data,data2){
-    //var data = this.state.returnData;
-    var tmp = "";
-    if(data.film_version != ""){
-      if(data.film_version.indexOf("2D")>-1){
-        tmp = "2D-";
-      }else if (data.flim_version.indexOf("3D")>-1){
-        tmp = "3D-";
-      }
-      if(data2.is_voice == 0){
-        tmp += "Phụ đề";
-      }else if(data2.is_voice == 1){
-        tmp += "Lồng tiếng";
-      }
-    }
-    return tmp;
-  }
-  getListSessionById(id, cineId){
-    //id: id cụm rạp
-    //cineId: id rạp con
-    var data = eval ('('+this.state.listSession+')');
-    //console.log("con meo: "+ this.state.listSession);
-    console.log(data);
-    var list = [];
-    if(data != undefined || data != null){
-      for(let i = 0; i< data.length; i++){
-        if(id == data[i].id && cineId == data[i].cineId){
-          list.push(data[i]);
-        }
-      }
-      return list;
-    }
-    return [];
+  reload(){
+    this.setState({
+      reload: !this.state.reload,
+    })
   }
   render(){
     let icon = this.icons['down'];
@@ -152,36 +88,34 @@ class Panel extends Component{
                   style={styles.buttonImage}
                   source={icon}></Image>
               </View>
-              {/* <TouchableOpacity
-                style={styles.button}
-                onPress={this.toggle.bind(this)}
-                underlayColor="#f1f1f1">
-              </TouchableOpacity> */}
             </View>
           </TouchableOpacity>
           <View style={styles.body} onLayout={this._setMaxHeight.bind(this)}>
             {/* {this.props.children} */}
-            {this.props.listCinema.map((prop, key)=>{
+            {this.props.listCinema.map((result, key)=>{
               return(
-                <View style={styles.sessionView} key={prop.id}>
-                  <PanelSmall key = {this.props.dataID} title = {prop.name} /*reload={this.state.reload}*/
-                    offset={this.state.offset}>
-                      <FlatList
-                        data={this.getListSessionById(this.props.dataID,prop.id)}
-                        renderItem={({item})=>
-                        <View style={styles.itemTimeView}>
-                          <View style={styles.timeView}>
-                            <Text style = {styles.startTimeText}>{item.start}</Text>
-                            <Text style = {styles.endTimeText}>{item.end}</Text>
-                          </View>
-                          <Text style={styles.versionView}>{item.version}</Text>
-                          <Image style={styles.iconTicket}
-                            resizeMode = {'center'}
-                            source = {require('../../img/icon_ticket.png')}
-                          />
-                        </View>}
-                        keyExtractor={(item, index) => index}></FlatList>
-                  </PanelSmall>
+                <View style={styles.sessionView} key={result.id}>
+                  <View style={styles.titleContainer} onLayout={this._setMinHeight.bind(this)} horizontal={true}>
+                    <Text style={styles.nameText}>{result.name}</Text>
+                    <Image style={styles.iconLocation}
+                      resizeMode = {'center'}
+                      source = {require('../../img/icon_location.png')}/>
+                  </View>
+                  <FlatList
+                    data={result.listSession}
+                    renderItem={({item})=>
+                    <View style={styles.itemTimeView}>
+                      <View style={styles.timeView}>
+                        <Text style = {styles.startTimeText}>{item.start}</Text>
+                        <Text style = {styles.endTimeText}>{item.end}</Text>
+                      </View>
+                      <Text style={styles.versionView}>{item.version}</Text>
+                      <Image style={styles.iconTicket}
+                        resizeMode = {'center'}
+                        source = {require('../../img/icon_ticket.png')}
+                      />
+                    </View>}
+                    keyExtractor={(item, index) => index}></FlatList>
                 </View>
               );})}
           </View>

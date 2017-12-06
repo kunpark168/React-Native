@@ -19,12 +19,12 @@ class MovieSession extends Component{
     this.getStartEndDate = this.getStartEndDate.bind(this);
     this.changeDateFormat = this.changeDateFormat.bind(this);
     this.onChangeDate = this.onChangeDate.bind(this);
-    this.getListCinemaById = this.getListCinemaById.bind(this);
     this.getListCinemas = this.getListCinemas.bind(this);
     this.getMainCinemas = this.getMainCinemas.bind(this);
     this.getListSessions = this.getListSessions.bind(this);
     this.getTime = this.getTime.bind(this);
     this.calculateEndTime = this.calculateEndTime.bind(this);
+
   }
   componentDidMount(){
     console.log('film_id2: '+this.state.filmId);
@@ -43,9 +43,8 @@ class MovieSession extends Component{
         isLoading: false,
         returnData: responseJson.result,
       });
-      this.getListCinemas(this.state.day);
-      this.getListSessions(this.state.day);
-      console.log("session: "+ this.state.returnData);
+      this.getMainCinemas();
+      //console.log(this.getMainCinemas());
     })
     .catch((error)=>{
       console.error(error);
@@ -64,9 +63,6 @@ class MovieSession extends Component{
         isLoading2: false,
         returnData2: responseJson.result,
       });
-      this.getMainCinemas();
-      console.log(this.state.returnData2);
-
     })
     .catch((error)=>{
       console.error(error);
@@ -116,54 +112,31 @@ class MovieSession extends Component{
         }
       }
       weekDates.push(tmp);
-
     }
     return weekDates;
-  }
-  getListCinemaById(id){
-    var list = [];
-    if(this.state.listCinema!= null || this.state.listCinema != undefined){
-      var data = eval('(' + this.state.listCinema + ')');
-      console.log("getByIdData: "+Object.prototype.toString.call(data));
-
-      for(let i = 0; i< data.length; i++){
-        if(id == data[i].mainId){
-          list.push(data[i]);
-          console.log("data: "+ data[i]);
-        }
-        console.log("mainId: "+data[i].mainId);
-        console.log("listLength: "+list.length);
-      }
-    }
-    return list;
   }
   onChangeDate=(day)=>{
     this.setState({
       day: day,
-      reload: true
     });
-    console.log('onChangeDate: '+day);
-    this.getListCinemas(day);
-    this.getListSessions(day);
+    this.getMainCinemas();
   }
-  getListCinemas(/*id,*/ day){
+  getListCinemas(id, day){
     var data = this.state.returnData;
-    //console.log("data: "+ data );
+    //console.log(data);
     var list = [], nameList=[];
-    for(let i = 0; i < data.length;i++){
-      if(/*id == data[i].p_cinema_id &&*/ Number(data[i].session_time.slice(8,10)) == day && !nameList.includes(data[i].cinema_name)){
-        list.push({name: data[i].cinema_name, id: data[i].cinema_id, mainId: data[i].p_cinema_id});
+    for(let i = 0; i<data.length;i++){
+      //console.log(data[i]);
+      if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
+      && !nameList.includes(data[i].cinema_name)){
+        list.push({name: data[i].cinema_name, /*id: data[i].cinema_id,*/ mainId: data[i].p_cinema_id,
+        listSession: this.getListSessions(data[i].cinema_id)});
         nameList.push(data[i].cinema_name);
       }
-      if(i == data.length - 1){
-        this.setState({
-          listCinema: JSON.stringify(list)
-        });
-        console.log("getListCinemas: "+Object.prototype.toString.call(JSON.stringify(list)));
-      }
     }
-    // if(list.length == 0)
-    //   list.push({name: 'Không có suất chiếu', id: ''});
+    this.setState({
+      listCinema: list
+    });
     return list;
   }
   getMainCinemas(){
@@ -172,15 +145,42 @@ class MovieSession extends Component{
     for(let i = 0; i< data.length;i++){
       if(!nameList.includes(data[i].p_cinema_name))
       {
-        list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo});
+        //this.getListCinemas(this.state.day);
+        list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo,
+        listCinema: this.getListCinemas(data[i].p_cinema_id, this.state.day)});
         nameList.push(data[i].p_cinema_name);
       }
     }
     this.setState({
-      mainCine: list
+      mainCine: list,
     });
-    //console.log("mainCine: "+list);
-    //return list;
+    console.log(this.state.mainCine);
+    return list;
+  }
+  getListSessions(/*id,*/idCine/*, day*/){
+    //id: id của cụm rạp
+    //idCine: id của riêng từng rạp
+    //day: ngày chiếu
+    var data = this.state.returnData;
+    var list = [], time=[];
+    for(let i = 0; i<data.length;i++){
+      if(idCine == data[i].cinema_id && !time.includes(data[i].session_time)
+        && this.state.day == Number(data[i].session_time.slice(8,10))){
+        // let time = this.getTime(data[i].session_time);
+        // let tmp = time +"~"+this.calculateEndTime(time, Number(data[i].film_duration));
+        // list.push(tmp);
+        let startTime = this.getTime(data[i].session_time);
+        let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
+        let version = this.getFilmVersion(this.props.dataDetail,data[i]);
+        list.push({id: data[i].p_cinema_id,cineId: data[i].cinema_id,
+          start: startTime, end: endTime, version: version});
+        time.push(data[i].session_time);
+      }
+    }
+    this.setState({
+      listSession : list,
+    });
+    return list;
   }
   getTime(time){
       let tmp = time.slice(11,16);
@@ -212,34 +212,6 @@ class MovieSession extends Component{
     }
     return tmp;
   }
-  getListSessions(/*id, idCine,*/ day){
-    //id: id của cụm rạp
-    //idCine: id của riêng từng rạp
-    //day: ngày chiếu
-    var data = this.state.returnData;
-    var list = [];
-    for(let i = 0; i<data.length;i++){
-      if(/*id == data[i].p_cinema_id &&*/Number(data[i].session_time.slice(8,10)) == day){/*&& idCine == data[i].cinema_id){*/
-        // let time = this.getTime(data[i].session_time);
-        // let tmp = {id: data[i].p_cinema_id,cineId: data[i].cinema_id,
-        //   time:time +"~"+this.calculateEndTime(time, Number(data[i].film_duration))};
-        let startTime = this.getTime(data[i].session_time);
-        let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
-        let version = this.getFilmVersion(this.props.dataDetail,data[i]);
-        list.push({id: data[i].p_cinema_id,cineId: data[i].cinema_id,
-          start: startTime, end: endTime, version: version});
-      }
-    }
-    this.setState({
-      // listSession : eval('('+list+')'),
-      listSession : JSON.stringify(list),
-    });
-    console.log("getListSession: "+ this.state.listSession);
-    console.log("getListSession type: "+ Object.prototype.toString.call(this.state.listSession));
-    // var myObj = eval('('+this.state.listSession+')');
-    // console.log("getListSessById: "+ myObj);
-    // console.log("type myObj: "+Object.prototype.toString.call(myObj));
-  }
   getListSessionById(id, cineId){
     //id: id cụm rạp
     //cineId: id rạp con
@@ -253,6 +225,7 @@ class MovieSession extends Component{
     }
     return list;
   }
+
   render(){
     if(this.state.isLoading || this.state.isLoading2){
       return(
@@ -278,17 +251,14 @@ class MovieSession extends Component{
           </ScrollView>
           <View>
             <View style={{paddingTop:5}}/>
-            {this.state.mainCine.map((result, key)=>{
+             {this.state.mainCine.map((result, key)=>{
               return(
-                <Panel key = {result.id} title={result.name} icon={result.icon} reload={this.state.reload}
-                  offset = {this.state.offset}
-                  dataSession= {this.state.returnData}
-                  dataDetail = {this.props.dataDetail}
+                <Panel key = {result.id} title={result.name} icon={result.icon} 
                   dataID = {result.id} dataDay = {this.state.day}
-                  listCinema = {this.getListCinemaById(result.id)}
-                  listSession = {this.state.listSession}>
+                  listCinema = {result.listCinema}
+                  listSession = {result.listCinema.listSession}/>
 
-                  {/* {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
+                  /* {this.getListCinemas(result.id,this.state.day).map((prop, key)=>{
                     return(
                       <View style={styles.sessionView} key={prop.id}>
                         <PanelSmall key = {result.id} title = {prop.name} reload={this.state.reload}
@@ -317,8 +287,8 @@ class MovieSession extends Component{
                           />
                         </View>
                       </View>
-                    );})}*/}
-                 </Panel>
+                    );})}*/
+
                );})}
              <View style={{padding:10}}/>
           </View>

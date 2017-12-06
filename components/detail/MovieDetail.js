@@ -38,6 +38,7 @@ export default class MovieDetail extends Component<{}> {
       listSession: [],
       listCinema: [],
       film_id: 0,
+      
     }
     this.getDateOfWeek = this.getDateOfWeek.bind(this);
     this.getStartEndDate = this.getStartEndDate.bind(this);
@@ -185,18 +186,25 @@ getMainCinemas(){
   for(let i = 0; i< data.length;i++){
     if(!nameList.includes(data[i].p_cinema_name))
     {
-      list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo});
+      //this.getListCinemas(this.state.day);
+      list.push({name: data[i].p_cinema_name, id: data[i].p_cinema_id, icon: data[i].cinema_logo,
+      listCinema: this.getListCinemas(data[i].p_cinema_id, this.state.day)});
       nameList.push(data[i].p_cinema_name);
     }
   }
+  this.setState({
+    sessionArr: list,
+  });
   return list;
 }
-getListCinemas(/*id,*/ day){
+getListCinemas(id, day){
   var data = this.state.returnData2;
   var list = [], nameList=[];
   for(let i = 0; i<data.length;i++){
-    if(/*id == data[i].p_cinema_id &&*/ Number(data[i].session_time.slice(8,10)) == day && !nameList.includes(data[i].cinema_name)){
-      list.push({name: data[i].cinema_name, id: data[i].cinema_id, mainId: data[i].p_cinema_id});
+    if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
+    && !nameList.includes(data[i].cinema_name)){
+      list.push({name: data[i].cinema_name, /*id: data[i].cinema_id,*/ mainId: data[i].p_cinema_id,
+      listSession: this.getListSessions(data[i].cinema_id)});
       nameList.push(data[i].cinema_name);
     }
   }
@@ -220,15 +228,15 @@ calculateEndTime(time, duration){
   let resultM = mins + timeMins;
   return resultH +":"+resultM;
 }
-getListSessions(id, idCine, day){
+getListSessions(/*id,*/idCine/*, day*/){
   //id: id của cụm rạp
   //idCine: id của riêng từng rạp
   //day: ngày chiếu
   var data = this.state.returnData2;
   var list = [];
   for(let i = 0; i<data.length;i++){
-    if(id == data[i].p_cinema_id
-      && Number(data[i].session_time.slice(8,10)) == day && idCine == data[i].cinema_id){
+    if(/*id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day &&*/
+     idCine == data[i].cinema_id){
       let time = this.getTime(data[i].session_time);
       let tmp = time +"~"+this.calculateEndTime(time, Number(data[i].film_duration));
       list.push(tmp);
