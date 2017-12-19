@@ -69,7 +69,7 @@ class Panel extends Component{
             diaplayBottomBar={true}
             mediaList={this.state.list_price}
             initialIndex={0}
-            imageErrorTitle='加载失败'
+            imageErrorTitle='Có lỗi xảy ra !'
             useCircleProgress
           />
           <TouchableOpacity
