@@ -162,6 +162,7 @@ class MovieSession extends Component{
     //idCine: id của riêng từng rạp
     //day: ngày chiếu
     var data = this.state.returnData;
+    var data2 = this.state.returnData2;
     var list = [], time=[];
     for(let i = 0; i<data.length;i++){
       if(idCine == data[i].cinema_id && !time.includes(data[i].session_time)
@@ -172,9 +173,14 @@ class MovieSession extends Component{
         let startTime = this.getTime(data[i].session_time);
         let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
         let version = this.getFilmVersion(this.props.dataDetail,data[i]);
-        list.push({id: data[i].p_cinema_id,cineId: data[i].cinema_id,
-          start: startTime, end: endTime, version: version});
-        time.push(data[i].session_time);
+        
+        for(let j = 0; j < data2.length; j++){
+          if(data2[j].cinema_id == data[i].cinema_id){
+            list.push({list_price: data2[j].list_price, id: data[i].p_cinema_id, cineId: data[i].cinema_id, start: startTime, end: endTime, version: version});
+            time.push(data[i].session_time);
+            break;
+          }
+        }
       }
     }
     this.setState({
