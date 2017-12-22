@@ -3,6 +3,7 @@ import PanelSmall from './PanelSmall';
 import{
   StyleSheet,Text,View,Image,TouchableOpacity,Animated,Dimensions,FlatList,
 }from 'react-native';
+import PhotoBrowser from '../../lib/index.js';
 
 class Panel extends Component{
   constructor(props){
@@ -16,6 +17,8 @@ class Panel extends Component{
       icon: props.icon,
       isExpanded: true,
       animation: new Animated.Value(),
+      visible: false,
+      list_price: [],
     }
   }
 
@@ -56,6 +59,20 @@ class Panel extends Component{
       <Animated.View
         style={[styles.container,{height: this.state.animation}]}>
         <View style={styles.container}>
+          <PhotoBrowser
+            visible={this.state.visible}
+            onClose={() => {
+              this.setState({
+                visible: false
+              })
+            }}
+            displayCloseBtn={true}
+            diaplayBottomBar={true}
+            mediaList={this.state.list_price}
+            initialIndex={0}
+            imageErrorTitle='Vui lòng thử lại sau !'
+            useCircleProgress
+          />
           <TouchableOpacity
             onPress={this.toggle.bind(this)}>
             <View style={styles.titleContainer} onLayout={this._setMinHeight.bind(this)} horizontal={true}>
@@ -90,10 +107,15 @@ class Panel extends Component{
                         <Text style = {styles.endTimeText}>{item.end}</Text>
                       </View>
                       <Text style={styles.versionView}>{item.version}</Text>
-                      <Image style={styles.iconTicket}
-                        resizeMode = {'center'}
-                        source = {require('../../img/icon_ticket.png')}
-                      />
+                      <TouchableOpacity
+                        onPress={() => {this.setState({
+                          list_price: [{photo: item.list_price}], 
+                          visible: 'true'
+                        })}}>
+                        <Image style={styles.iconLocation}
+                          resizeMode = {'center'}
+                          source = {require('../../img/icon_ticket.png')} />
+                      </TouchableOpacity>
                     </View>}
                     keyExtractor={(item, index) => index}></FlatList>
                   {/* <PanelSmall title={result.name} key = {result.id}>
