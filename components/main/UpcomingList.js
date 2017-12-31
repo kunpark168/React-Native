@@ -64,13 +64,16 @@ export default class UpcomingList extends Component<{}> {
     return (
       <ScrollView style = {styles.container}>
          <View style = {styles.search}>
-            <View style = {styles.containerSearch}>
-              <Image
-                style = {styles.iconSearch}
-                resizeMode = {'center'}
-                source = {require('../../img/imgBack.png')}
-              />
-            </View>
+            <TouchableOpacity
+            onPress = {()=>{this.props.navigation.navigate('Home', {JSON : this.state.returnData})}}>
+                <View style = {styles.containerSearch}>
+                  <Image
+                    style = {styles.iconSearch}
+                    resizeMode = {'center'}
+                    source = {require('../../img/imgBack.png')}
+                  />
+                </View>
+            </TouchableOpacity>
             <View style = {styles.containerTitle}>
               <Text style = {styles.titleMovie}>Movie Upcoming</Text>
             </View>
@@ -82,9 +85,9 @@ export default class UpcomingList extends Component<{}> {
                   renderItem={({item}) =>
                   <View>
                     <View>
-                        <TouchableOpacity onPress = {() => {
-                               this.props.onPress (item.film_id)
-                          }}>
+                        <TouchableOpacity onPress = {()=> {
+                          this.props.navigation.navigate('Detail', {fiml_id : item.film_id});
+                        }}>
                           <Image
                             style={styles.containerGenre}
                             source={{uri: item.poster_thumb}}
