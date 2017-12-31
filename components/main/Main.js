@@ -71,21 +71,6 @@ render() {
                     </View>
                   </TouchableOpacity>
            <MoviesSwiper />
-           <View style = {[styles.containerCalendar, {marginBottom : 7}]}>
-               <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
-                   <Text style = {[styles.textCalendar, {fontWeight : "bold", marginLeft : 7}]}>Movies Schedule</Text>
-               </View>
-               <View style = {{flex : 5, justifyContent : 'center', marginRight : 10, marginTop : 8, alignItems : 'flex-end'}}>
-                     <TouchableOpacity
-                     onPress = {(id_film)=> {
-                       this.props.navigation.navigate('OnAirMovieList', {fiml_id : id_film});
-                     } }
-                     >
-                       <Text style = {[styles.textCalendar, {color : 'red', fontWeight : "bold", textDecorationLine : 'underline'}]}></Text>
-                     </TouchableOpacity >
-               </View>
-           </View>
-          <MoviesSchedule />
           <View style = {[styles.containerCalendar, {marginBottom : 7}]}>
               <View style = {{flex : 5, justifyContent : 'center', marginLeft : 3, marginTop : 8}}>
                   <Text style = {[styles.textCalendar, {fontWeight : "bold", marginLeft : 7}]}>Top Movies</Text>
