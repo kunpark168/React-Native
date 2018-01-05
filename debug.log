@@ -1,0 +1,4 @@
+[1024/102733.186:ERROR:process_info.cc(632)] range at 0xad352a5e00000000, size 0xb3 fully unreadable
+[1024/102733.186:ERROR:process_info.cc(632)] range at 0xad352ac400000000, size 0xb3 fully unreadable
+[1024/102733.186:ERROR:process_info.cc(632)] range at 0x0, size 0xb3 fully unreadable
+[1101/230427.824:ERROR:file_io.cc(134)] WriteFile: The pipe is being closed. (0xE8)
