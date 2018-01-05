@@ -29,7 +29,7 @@ class Panel extends Component{
     this.setState({
       isExpanded: !this.state.isExpanded,
     });
-    console.log('expand: '+this.state.isExpanded);
+    //console.log('expand: '+this.state.isExpanded);
     this.state.animation.setValue(initialValue);
     Animated.spring(
       this.state.animation,
@@ -40,7 +40,7 @@ class Panel extends Component{
   }
   _setMaxHeight(event){
     this.setState({
-      maxHeight : event.nativeEvent.layout.height
+      maxHeight : event.nativeEvent.layout.height+20
     });
   }
   _setMinHeight(event){
@@ -92,11 +92,14 @@ class Panel extends Component{
             {this.props.listCinema.map((result, key)=>{
               return(
                 <View style={styles.sessionView} key={result.id}>
-                  <View style={styles.cinemaContainer}  horizontal={true}>
-                    <Text style={styles.nameText}>{result.name}</Text>
-                    <Image style={styles.iconLocation}
-                      resizeMode = {'center'}
-                      source = {require('../../img/icon_location.png')}/>
+                  <View style={styles.cinemaContainer}>
+                    <View style={styles.cinemaContainer2}  horizontal={true}>
+                      <Text style={styles.nameText}>{result.name}</Text>
+                      <Image style={styles.iconLocation}
+                        resizeMode = {'center'}
+                        source = {require('../../img/icon_location.png')}/>
+                    </View>
+                    <Text style={styles.address}>{result.address}</Text>
                   </View>
                   <FlatList
                     data={result.listSession}
@@ -109,7 +112,7 @@ class Panel extends Component{
                       <Text style={styles.versionView}>{item.version}</Text>
                       <TouchableOpacity
                         onPress={() => {this.setState({
-                          list_price: [{photo: item.list_price}], 
+                          list_price: [{photo: item.list_price}],
                           visible: 'true'
                         })}}>
                         <Image style={styles.iconLocation}
@@ -141,14 +144,16 @@ const styles= StyleSheet.create({
     borderColor: '#5a5960',
     borderBottomWidth: 0.5,
   },
-  cinemaContainer:{
+  cinemaContainer2:{
     flexDirection:'row',
+  },
+  cinemaContainer:{
     paddingBottom:20,
     borderColor: '#5a5960',
     borderBottomWidth: 0.5,
+    borderTopWidth:0.5,
     paddingTop:20,
   },
-
   title:{
     flex : 1,
     paddingLeft:10,
@@ -185,6 +190,11 @@ const styles= StyleSheet.create({
     color: 'white',
     opacity:0.5,
     marginTop: 10,
+  },
+  address:{
+    color: 'white',
+    opacity:0.5,
+    marginLeft: 10,
   },
   startTimeText:{
     fontSize: 25,

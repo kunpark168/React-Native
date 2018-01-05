@@ -24,6 +24,7 @@ class MovieSession extends Component{
     this.getListSessions = this.getListSessions.bind(this);
     this.getTime = this.getTime.bind(this);
     this.calculateEndTime = this.calculateEndTime.bind(this);
+    this.getAddressById = this.getAddressById.bind(this);
 
   }
   componentDidMount(){
@@ -43,7 +44,7 @@ class MovieSession extends Component{
         isLoading: false,
         returnData: responseJson.result,
       });
-      if(this.state.returnData != undefined || this.state.returnData != null){
+      if(this.state.returnData != undefined){
         this.getMainCinemas();
       }
     })
@@ -68,6 +69,16 @@ class MovieSession extends Component{
     .catch((error)=>{
       console.error(error);
     })
+  }
+  getAddressById(id){
+    var data = this.state.returnData2;
+    for(let i = 0; i< data.length;i++){
+      //console.log(id + "////"+ data[i].cinema_id);
+      if(id == data[i].cinema_id){
+        return data[i].cinema_address;
+      }
+    }
+    return "N/A";
   }
   getStartEndDate(){
     let today = new Date();
@@ -129,13 +140,14 @@ class MovieSession extends Component{
       if(id == data[i].p_cinema_id && Number(data[i].session_time.slice(8,10)) == day
       && !nameList.includes(data[i].cinema_name)){
         list.push({name: data[i].cinema_name, mainId: data[i].p_cinema_id,
-        listSession: this.getListSessions(data[i].cinema_id)});
+        listSession: this.getListSessions(data[i].cinema_id),
+        address: this.getAddressById(data[i].cinema_id)});
         nameList.push(data[i].cinema_name);
       }
     }
     if(list.length == 0){
       list.push({name: "Không có suất chiếu", mainId: '',
-      listSession: ''})
+      listSession: '', address:''})
     }
     return list;
   }
@@ -173,7 +185,7 @@ class MovieSession extends Component{
         let startTime = this.getTime(data[i].session_time);
         let endTime = "~"+this.calculateEndTime(startTime, Number(data[i].film_duration));
         let version = this.getFilmVersion(this.props.dataDetail,data[i]);
-        
+
         for(let j = 0; j < data2.length; j++){
           if(data2[j].cinema_id == data[i].cinema_id){
             list.push({list_price: data2[j].list_price, id: data[i].p_cinema_id, cineId: data[i].cinema_id, start: startTime, end: endTime, version: version});
